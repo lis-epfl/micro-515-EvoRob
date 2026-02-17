@@ -29,7 +29,7 @@ we will change parts of the software to our needs (e.g. change the optimiser, or
 change (i.e. hotswap) these parts of our framework.
 
 For consistency with our framework, the source code is separated in a  [📁evorob/algorithms](evorob/algorithms), and  [📁evorob/world](evorob/world),
-folder. A third  [📁evorob/utils](https://github.com/fudavd/EvoRob/tree/main/src/utils) folder contains several functionalities like filesystem management
+folder. A third  [📁evorob/utils](evorob/utils) folder contains several functionalities like filesystem management
 and geometric matrix manipulation.
 
 ### EA
