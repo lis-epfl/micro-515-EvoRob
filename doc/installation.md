@@ -49,7 +49,7 @@ Download and install the latest version of Git (make sure to check the 32 or 64 
 # General software install
 
 1. If needed, make an account at github: [https://github.com/signup?source=form-home-signup\&user\_email=](https://github.com/signup)
-2. Go to: [https://github.com/fudavd/EvoRob](https://github.com/fudavd/EvoRob)
+2. Go to: [https://github.com/fudavd/EvoRob](https://github.com/lis-epfl/micro-515-EvoRob)](https://github.com/lis-epfl/micro-515-EvoRob)](https://github.com/fudavd/EvoRob)
 3. Fork the repository without changing the name:
 
    ![install](imgs/install0.png)
