@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools >= 64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evorob"
+version = "1.0.0"
+authors = [
+  {name = "Fuda van Diggelen", email = "fuda.vandiggelen@epfl.ch"},
+  {name = "Alexander Dittrich", email = "alexander.dittrich@epfl.ch"},
+  {name = "Alexander Ertl", email = "alexander.ertl@epfl.ch"},
+]
+license = "MIT"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+exclude = ["resources", "results", "tests"]

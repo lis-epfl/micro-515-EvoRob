@@ -1,0 +1,16 @@
+numpy
+scipy
+
+# Learning frameworks
+stable-baselines3
+imageio
+mujoco>=2.3.3 #.venv/lib/python3.8/site-packages/gymnasium/envs/mujoco/mujoco_rendering.py L:593 ..self.data.solver_iter --> self.data.solver_niter
+gymnasium==1.0.0
+cma
+
+# Visualisation tools
+matplotlib
+tqdm # progress bar visualisation
+wandb # learning visualisation
+
+mujoco-python-viewer

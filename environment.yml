@@ -1,0 +1,21 @@
+name: micro515
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - numpy
+    - scipy
+    # Learning frameworks
+    - stable-baselines3
+    - imageio
+    - mujoco>=2.3.3
+    - gymnasium==1.0.0
+    - cma
+    # Visualisation tools
+    - matplotlib
+    - tqdm
+    - wandb
+    - mujoco-python-viewer
