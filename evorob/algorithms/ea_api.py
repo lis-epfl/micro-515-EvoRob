@@ -16,18 +16,20 @@ class EvoAlgAPI(EA):
     - EvoJAX: https://github.com/google/evojax
     """
 
-    def __init__(self, n_params: int, population_size: int = 100,
+    def __init__(self, n_params: int, population_size: int = 100, num_generations: int = 100,
                  output_dir: str = "./results/EA", **kwargs):
         """Initialize the evolutionary algorithm.
 
         Args:
             n_params: Dimensionality of the search space
             population_size: Number of solutions per generation
+            num_generations: Number of generations
             output_dir: Directory for saving checkpoints
             **kwargs: Additional arguments for the EA framework
         """
         # TODO: Initialize your chosen EA framework here
         self.n_params = n_params
+        self.n_gen = num_generations
         self.population_size = population_size
         
         # % bookkeeping for base EA
