@@ -18,14 +18,16 @@
   </default>
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
-    <material name="ice_surface" reflectance="0.1"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.6 0.6 0.8" rgb2="0.6 0.6 0.8"
+      markrgb="0.6 0.6 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.5"/>
   </asset>
   <worldbody>
     <light diffuse="1 1 1" dir="0 0 -1" directional="true" pos="0 0 5" specular=".1 .1 .1"/>
-    <geom name="ice_surface" size="80 20 0.1" pos="70 0 -0.1" type="plane" material="ice_surface" conaffinity="1" condim="3" rgba="0.5 0.5 1 0.2"/>
+    <geom conaffinity="1" condim="3" material="groundplane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="80 40 40" type="plane"/>
     
     <body name="torso" pos="0 0 0.75">
-      <camera name="track" mode="trackcom" pos="0 -3 0.3" xyaxes="1 0 0 0 0 1"/>
+      <camera name="track" mode="trackcom" pos="0 -4 0.4" xyaxes="1 0 0 0 0 1"/>
       <geom name="torso_geom" pos="0 0 0" size="0.25" type="sphere"/>
       <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"/>
       <body name="front_left_leg" pos="0 0 0">

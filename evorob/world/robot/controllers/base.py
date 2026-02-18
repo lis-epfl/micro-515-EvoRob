@@ -7,7 +7,10 @@ class Controller(ABC):
 
     @abstractmethod
     def get_action(self, state) -> Any:
-        return NotImplementedError
+        raise NotImplementedError
+
+    def reset_controller(self, batch_size=1) -> None:
+        ...
 
     def geno2pheno(self, genotype) -> None:
-        return NotImplementedError
+        raise NotImplementedError

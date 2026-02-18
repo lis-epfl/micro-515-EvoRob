@@ -26,10 +26,10 @@ class HebbianNumpyNetwork:
         self.lin1_init = rng.uniform(-self.rescale_weights,  self.rescale_weights, (n_hidden, n_input))
         self.output_init = rng.uniform(-self.rescale_weights,  self.rescale_weights, (n_output, n_hidden))
 
-        self.lin1 = None
-        self.output = None
+        self.lin1: np.ndarray
+        self.output: np.ndarray
 
-    def set_hebbian_rules(self, abcd: np.array) -> None:
+    def set_hebbian_rules(self, abcd: np.ndarray) -> None:
         abcd = np.array(abcd).reshape(4, self.total_weights)
         self.A = abcd[0, :]
         self.B = abcd[1, :]

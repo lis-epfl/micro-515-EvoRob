@@ -11,13 +11,14 @@ from evorob.world.robot.controllers.mlp import NeuralNetworkController
 class AntMultiWorld(World):
     """Wrapper for the Ant environment for evolutionary optimization."""
 
-    def __init__(self, controller_cls: Controller = NeuralNetworkController):
+    def __init__(self, controller_cls: type[Controller] = NeuralNetworkController):
         self.env = self.create_env()
         self.dt = self.env.envs[0].unwrapped.dt
         self.action_size = self.env.action_space.shape[1]
         self.obs_size = self.env.observation_space.shape[1]
         self.controller = controller_cls(self.obs_size, self.action_size)
         self.n_params = self.controller.n_params
+        self._eval_counter = 0  # Counter for seed generation
 
     def create_env(
         self,
@@ -64,7 +65,11 @@ class AntMultiWorld(World):
 
         self.geno2pheno(genotype)
 
-        observations, _ = self.env.reset()
+        # Generate unique seeds for each environment in this evaluation
+        seeds = [self._eval_counter * self.n_repeats + i for i in range(self.n_repeats)]
+        self._eval_counter += 1
+        
+        observations, _ = self.env.reset(seed=seeds)
         done_mask = np.zeros(self.n_repeats, dtype=bool)
         rewards_full = np.zeros((n_sim_steps, self.n_repeats))
         for step in range(n_sim_steps):
@@ -85,6 +90,11 @@ class AntMultiWorld(World):
 
         # Return 2D array for multi-objective optimization
         return np.array([reward_env1, reward_env2])
+
+    def update_robot_xml(self, genotype: np.ndarray):
+        """Update the robot's XML based on the genotype."""
+        # For AntFlatWorld, we don't have body parameters.
+        pass
 
     def close(self):
         """Explicitly close the environment."""

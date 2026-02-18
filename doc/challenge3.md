@@ -43,11 +43,13 @@ Check the evaluate\_individual function to see where we implement this paralleli
 | :---- |
 
 * What is the result of altering: slope_deg; bump_scale; sigma?
-* Hypothesize: would there be difference in outcome when we would evolve the Ant in an environment with small obstacles like bumps; why yes/
+* Hypothesize: would there be difference in outcome when we would evolve the Ant in an environment with small obstacles like bumps?
 
 | Set the parameters of the terrain as follows: slope_deg = 5.0, bump_scale = 0.1, sigma = 3.0. You can set the 8 parameters of body lengths: upper legs 0.2, lower legs 0.4|
 | :---- |
 
+* Overwrite the controller of the AntHill to the previous MLP of Challenge1
+* Load your evolved genotype
 * Is the controller able to walk up the hill?
   
 | Make the legs longer|
@@ -61,26 +63,58 @@ Check the evaluate\_individual function to see where we implement this paralleli
 * How should we alter the termination to accomondate the hill terrain?
 * Can you improve the reward function?
 
-| Run ES to optimise the body-lengths and SO2-oscillator.|
-| :---- |
+| Run CMAES to optimise the body-lengths and SO2-oscillator. |
+|:-----------------------------------------------------------|
 
 * What are the current termination conditions implemented for in the step function?
 * How should we alter the termination to accomondate the hill terrain?
 * Can you improve the reward function?
 
-| Run ES to optimise the body-lengths and MLP controller.|
+| Run CMAES to optimise the body-lengths and MLP controller.|
 | :---- |
 
 * What is the dimensionality of your search space, can you reduce the MLP size?
 
-| Run ES to optimise the body-lengths and Hebbian controller.|
+---
+Bonus: adaptive feedback control
+
+| Run CMAES to optimise the body-lengths and Hebbian controller.|
 | :---- |
 
 * Hebbian Learning adds adaptability during deployment by changing the neuron weights. Why would this be usefull?
 * What is the dimensionality of your search space?
+
+---
 
 | Run NSGA-II, on the same environment with MLP.|
 | :---- |
 
 * What are the two rewards that are part of the multi-objective optimisation?
   * Can you think of a better reward?
+
+# Challenge 3 Submission Details
+
+The given exercise should provide a fundamental understanding of practical aspects of multi-objective optimisation, and analysis of the Pareto front to understand the trade-off between morphological designs.
+
+<div align="center">
+  <img src="imgs/ant_caricature_hilly.png" width="60%">
+</div>
+
+To master Challenge 3, submit:
+- **Data**: Your best genotype for the MLP+8 body params (size 288) as `x_best.npy`
+- **Code**: Your `ant_hill.npy` `Challenge3.py`
+- **Pareto Front Visualization**: A plot showing the final Pareto front with both objectives
+- **Morphology Comparison**: Table or plots analysing morphological parameters of the specialists and generalist
+- **Videos**: Three renderings of the best ant with MLP controller:
+  - Specialist: Of each objective
+  - Generalist: The best overall 
+- **Analysis Report**: A `README.md` (max. 300 words) describing:
+  - Motivate the design of the multi-objective reward
+  - Observed trade-offs in the Pareto front
+  - Performance comparison (specialists vs. generalists)
+
+Provide all documents in a zipped folder with the following naming convention: `2026_micro_515_SCIPER_TEAMNAME_LASTNAME1_LASTNAME2_challenge3.zip`.
+
+# Questions?
+
+If some parts of your code are not working or you have general questions, do not hesitate to contact your MICRO-515 teaching assistants in the exercise sessions or via e-mail `fuda.vandiggelen@epfl.ch`, `alexander.ertl@epfl.ch`, `alexander.dittrich@epfl.ch`, `hongze.wang@epfl.ch`

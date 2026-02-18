@@ -53,7 +53,7 @@ class PassiveWalkerRobot:
         self.properties = props
         self.options = {"timestep": "1e-3", "integrator": "RK4"}
         self.verbose = verbose
-        self.xml = None
+        self.xml: xml.Element
         self.limbs = []
         self.n_limbs = None
         self.fixed_base = fixed_base

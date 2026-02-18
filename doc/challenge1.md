@@ -78,11 +78,11 @@ class YourGymEnvironment
 	
 ```
 
-2. Define the observation function (`_get_obs()`) in the following way: We want to return a numpy array with the xyz-position of the torso, all joint angles and all joint velocities. (**Hint**: You can directly access the generalized coordinates via `self.data`).
+2. Define the observation function (`_get_obs()`) in the following way: We want to return a numpy array containing the robot state **excluding the x,y position** (to make the task translation-invariant). Specifically, concatenate: `self.data.qpos[2:]` (z-position, orientation quaternion, joint angles) and `self.data.qvel` (all velocities). The resulting observation should have 27 dimensions (13 positions + 14 velocities). (**Hint**: Use `np.concatenate()` to combine the arrays).
 
 3. Define the reward function (`_get_rew()`) with a forward reward of $r_{forward}=1.0*v_x$, a "survival" reward of $r_{healthy}=1.0$ for not terminating and a cost of $r_{control}=-0.5*\sum (\tau)^2$ to penalize torque and hopefully achieve a more efficient gait. (**Hint**: The actions are directly defining the torque applying to the joints.)
 
-4. Define the termination function (`_get_termination()`) where we terminate (and reset) the environment, when our robot torso height is below $0.25$ (falling) or above $1.0$ (jumping). (**Hint**: You can access the height via `torso_height = self.state_vector()[2]`)
+4. Define the termination function (`_get_termination()`) where we terminate (and reset) the environment, when our robot torso height is below $0.26$ (falling) or above $1.0$ (jumping). (**Hint**: You can access the height via `torso_height = self.state_vector()[2]`)
 
 5. Now execute the main running script (`python3 Challenge1a.py`) and see if your environment is well-defined.
 
@@ -174,7 +174,7 @@ class PowerfulEvolutionaryAlgorithm:
 
 3. Find `ea_api.py` in the `evorob` codebase ([evorob/algorithms/ea_api.py](evorob/algorithms/ea_api.py)).
 
-4. Implement the interface so that the parameters of your framework are correctly assigned at initialization, that the `ask()` generates a population of solutions in the following format `(population_id, neural_network_parameter)` and the tell internally updates the state. (**Hint**: `cma-es` requires the parameters to be passed as `dict` datastructure called `opts`, `evosax` required manually handeling of state and random keys.)
+4. Implement the interface so that the parameters of your framework are correctly assigned at initialization, that the `ask()` generates a population of solutions as a numpy array of shape `(population_size, num_params)` where each row represents one candidate solution with all neural network parameters, and the `tell()` method internally updates the algorithm state with the evaluated fitnesses. (**Hint**: `cma-es` requires the parameters to be passed as `dict` datastructure called `opts`, `evosax` requires manually handling of state and random keys.)
 
 5. Now execute the main running script (`python3 Challenge1a.py`) and see if your evolutionary algorithm API is well-defined.
 

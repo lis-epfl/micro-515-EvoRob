@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from gymnasium import Env
-from gymnasium.vector import AsyncVectorEnv
+from gymnasium.vector import SyncVectorEnv
 
 from evorob.world.robot.controllers.base import Controller
 
@@ -12,19 +12,19 @@ class World(ABC):
     controller: Controller
 
     @abstractmethod
-    def create_env(self, render_mode: str = 'rgb_array', **kwargs) -> AsyncVectorEnv|Env:
-        return NotImplementedError
+    def create_env(self, render_mode: str = 'rgb_array', **kwargs) -> SyncVectorEnv|Env:
+        raise NotImplementedError
 
     @abstractmethod
-    def evaluate_individual(self, genotype) -> float:
-        return NotImplementedError
+    def evaluate_individual(self, genotype) -> float|np.ndarray:
+        raise NotImplementedError
 
     @abstractmethod
     def geno2pheno(self, genotype) -> object:
-        return NotImplementedError
+        raise NotImplementedError
 
     def update_robot_xml(self, genotype: np.ndarray):
-        return NotImplementedError
+        raise NotImplementedError
 
     def generate_best_individual_video(self, env, video_name: str, controller: Controller|None = None, n_steps: int = 1000):
         if controller is None:

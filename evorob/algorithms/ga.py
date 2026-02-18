@@ -1,10 +1,8 @@
-import os
 from typing import Dict
 
 import numpy as np
 
 from evorob.algorithms.base_ea import EA
-from evorob.utils.filesys import search_file_list
 
 GA_opts = {
     "min": -4,
@@ -35,7 +33,7 @@ class GA(EA):
         # % bookkeeping
         self.directory_name = output_dir
         self.full_x = []
-        self.full_fitness = []
+        self.full_f = []
         self.x_best_so_far = None
         self.f_best_so_far = -np.inf
         self.x = None
@@ -69,10 +67,10 @@ class GA(EA):
         new_population = np.clip(new_population, self.min, self.max)
         return new_population
 
-    def tell(self, solutions, function_values, save_checkpoint=True):
+    def tell(self, solutions, function_values, save_checkpoint=False):
         """Updates the current population given the individuals and fitnesses."""
         #% Some bookkeeping
-        self.full_fitness.append(function_values)
+        self.full_f.append(function_values)
         self.full_x.append(solutions)
         self.f = function_values
         self.x = solutions

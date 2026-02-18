@@ -59,8 +59,8 @@ class AntRobot:
         self.properties = props
         self.options = options
         self.verbose = verbose
-        self.xml = None
-        self.limbs = None
+        self.xml: xml.Element
+        self.limbs = []
         self.n_limbs = None
         self.fixed_base = fixed_base
         self.removed_nodes = []

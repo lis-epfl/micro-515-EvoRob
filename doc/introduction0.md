@@ -36,21 +36,21 @@ that might strike your interest.
 
 ![passive walker](imgs/passive0.gif)
 
-**Goal:** Build and test your own EA & optimise the passive dynamic walker  
+**Goal:** Build and test your own ES & optimise the passive dynamic walker  
 
 **Introduction**
 This exercise is a warm-up to understand the information flow of an evolution pipeline. We will use our EvoRob pipeline and build your own implementation
-of an EA. The use of simple test-functions is important for debugging.
+of an ES. The use of simple test-functions is important for debugging.
 
 *Q.0.1*
 
-* EAs are ‘blackbox’ optimisers that require minimal information on the problem. Nevertheless, what information is still needed for the EA to optimise the parameters in the **World**?
+* ESs are ‘blackbox’ optimisers that require minimal information on the problem. Nevertheless, what information is still needed for the ES to optimise the parameters in the **World**?
 
 *Q.0.2*
-```
-class EA:
+```python
+class ES:
 
-    def __init__(self, n_pop, n_params, opts: dict = EA_opts, output_dir: str = "./results"):
+    def __init__(self, n_pop, n_params, opts: Dict = ES_opts):
         ...
 
     def ask(self):
@@ -65,31 +65,32 @@ class EA:
         """Initialises the first population."""
         # TODO
 
-    def select_parent(self):
-        """Tournament selection: choose a random individual and return it."""
+    def update_sigma(self):
+        """Update the perturbation strength (sigma)."""
         # TODO
 
-    def crossover(self, parent1, parent2):
-        """Single-point crossover."""
+    def sort_and_select_parents(self, population, fitness, num_parents):
+        """Sorts the population based on fitness and selects the top individuals as parents."""
         # TODO
 
-    def mutate(self, individual):
-        """Mutate an individual by flipping bits with a given mutation rate."""
+    def update_population_mean(self, parent_population, parent_fitness, rank: bool = True):
+        """Updates the population mean based on the selected parents and their fitness."""
         # TODO
 
-    def save_checkpoint(self):
-        ...
-
-    def load_checkpoint(self):
-        ...
+    def generate_mutated_offspring(self, population_size):
+        """Generates a new population by adding Gaussian noise to the current mean."""
+        # TODO
 ```
 
-| The EA class is provided with standard functionalities (such as tracking results, and loading from checkpoints), but still lacks the functionality to optimize properly.|
+| The ES class is provided with standard functionalities (such as tracking results, and loading from checkpoints), but still lacks the functionality to optimize properly.|
 | :---- |
 
-* The EA class uses the ask/tell interface that receives and provides certain inputs and outputs. What are the inputs and outputs of the ask/tell interface?
+* The ES class uses the ask/tell interface that receives and provides certain inputs and outputs. What are the inputs and outputs of the ask/tell interface?
 
-* The EA class is provided with automatic bookkeeping during optimisation. We can retrieve the stored data for plotting results. What do the array dimension of the \*.npy files correspond with (generations/individuals/genes/fitnesses/…?). Analyse the data obtained with \<fitness\_full \= [np.load(...)](https://numpy.org/doc/stable/reference/generated/numpy.load.html)\> how do the dimensions of the fitness variables relate to n\_pop, n\_gen, num\_parents?
+* The ES class is provided with automatic bookkeeping during optimisation. We can retrieve the stored data for plotting results. What do the array dimension
+  of the \*.npy files correspond with (generations/individuals/genes/fitnesses/…?). Analyse the data obtained with
+  \<fitness\_full \= [np.load(...)](https://numpy.org/doc/stable/reference/generated/numpy.load.html)\> how do the dimensions of the fitness variables
+  relate to n\_pop, n\_gen, num\_parents?
 
 ----------------------------------------------------------------------
 
@@ -119,7 +120,7 @@ We automatically create robot descriptions that MuJoCo can read during evolution
 
 * In the same file we load slope geometry as a worldbody. Can you find the slope angle of this geometry?
 
-Open a simulation instance of MuJoCo by running the following command in the command line: python \-m mujoco.viewer
+Open a simulation instance of MuJoCo by running the following command in the command line: `python -m mujoco.viewer`
 
 * Use drag-and-drop to load the default walker world file 📂[/evorob/world/robot/assets/walker_world.xml](..//evorob/world/robot/assets/walker_world.xml) file into the simulator. Can you change the slope in this file:
   * Color
@@ -133,7 +134,7 @@ Return the properties of the slope back to its original settings.
 
 *Q2.2* The `PassiveWalkerRobot.xml` that our `PassiveWalkerRobot` class generates describes our simulation model. We can plug this xml in our custom `PassiveWalkerWorld` environment to calculate a fitness value. This provides the same interface  with your EA as our previous exercises. Now that we have the **World** we can plug in our previously developed **EA**.
 
-| Adapt your EA to optimize for the new genotype |
+| Adapt your ES to optimize for the new genotype |
 | :---- |
 
 * Does the best solution make sense?

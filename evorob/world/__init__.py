@@ -8,7 +8,7 @@ register(
 
 register(
     id="AntHill-v0",
-    entry_point="evorob.world.envs.ant_hill_sol:AntHillEnv",
+    entry_point="evorob.world.envs.ant_hill:AntHillEnv",
     max_episode_steps=1000,
 )
 
