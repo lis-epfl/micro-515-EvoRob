@@ -1,0 +1,46 @@
+<mujoco model="demo">
+  <compiler angle="degree" coordinate="local"/>
+
+  <!-- Gravity is enabled by default -->
+  <option gravity="0 0 0" timestep="0.002">
+    <flag warmstart="enable"/>
+  </option>
+
+  <!-- Visual settings -->
+  <visual>
+    <headlight ambient="0.5 0.5 0.5" diffuse="0.8 0.8 0.8"/>
+    <rgba haze="0.15 0.25 0.35 1"/>  <!-- Haze for depth perception -->
+    <global azimuth="10" elevation="-40"/>
+  </visual>
+
+  <!-- Assets: materials and textures -->
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="512"/>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.2 0.3 0.4" rgb2="0.3 0.4 0.5" width="512" height="512"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
+    <material name="robot" rgba="0.7 0.3 0.3 1"/>
+    <material name="object" rgba="0.3 0.7 0.3 1"/>
+  </asset>
+
+  <!-- World body -->
+  <worldbody>
+    <!-- Floor -->
+    <geom name="floor" type="plane" size="5 5 0.1" material="grid"/>
+
+    <!-- Lighting -->
+    <light pos="0 0 3" dir="0 0 -1" directional="true"/>
+
+    <!-- Static objects -->
+    <body name="static_box" pos="0 0 2">
+      <geom name="box" type="box" size="0.25 0.25 0.25" rgba="0.8 0.4 0.1 1" mass="0.2"/>
+    </body>
+
+    <!-- Free-falling objects -->
+    <!-- TODO -->
+
+    <!-- Simple 2-link robot arm -->
+    <!-- TODO -->
+
+  </worldbody>
+
+</mujoco>
