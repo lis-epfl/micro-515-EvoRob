@@ -48,7 +48,7 @@ class PassiveWalkerWorld(World):
         robot.xml = robot.define_robot()
         robot.write_xml(self.temp_dir.name)
 
-        # % Defining the Robot environment in MuJoCo #TODO
+        # % Defining the Robot environment in MuJoCo
         world = xml.parse(self.base_xml_path)
         robot_env = world.getroot()
 
