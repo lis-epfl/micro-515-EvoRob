@@ -105,29 +105,9 @@ class ES(EA):
 
         return parent_population, parent_fitness
 
-    def update_population_mean(self, parent_population, parent_fitness, rank: bool = False):
-        """Updates the population mean based on the selected parents and their fitness."""
+    def update_population_mean(self, parent_population, parent_fitness):
         # TODO: compute the new population mean as a weighted average of the parent population, where the weights are based on the parent fitness
         # (you can use rank or raw fitness values)
-        normed_parents_fitness = ...
-        self.current_mean = ...
-
-    def generate_mutated_offspring(self, population_size):
-        """Generates a new population by adding Gaussian noise to the current mean."""
-        # TODO: generate a new population by adding Gaussian noise to the current mean, where the noise is scaled by the current sigma value
-        perturbation = ...
-        mutated_population = ...
-
-        return mutated_population
-
-    def sort_and_select_parents(self, population, fitness, num_parents):
-        # TODO
-        parent_population = ...
-        parent_fitness = ...
-        return parent_population, parent_fitness
-
-    def update_population_mean(self, parent_population, parent_fitness):
-        # TODO
         # Normalise parent fitness scores
         normed_parents_fitness = ...
 
@@ -139,9 +119,11 @@ class ES(EA):
 
         return updated_mean_vector
 
-    def update_sigma(self):
-        #TODO
-        minimum_sigma = ...
-        sigma = self.current_sigma
-        param_size = self.n_params
-        return sigma
+    def generate_mutated_offspring(self, population_size):
+        """Generates a new population by adding Gaussian noise to the current mean."""
+        # TODO: generate a new population by adding Gaussian noise to the current mean, where the noise is scaled by the current sigma value
+        perturbation = ...
+        mutated_population = ...
+
+        return mutated_population
+
