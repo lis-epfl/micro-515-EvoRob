@@ -6,7 +6,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize, VecVideoRecorder, DummyVecEnv
 
-from evorob.world.envs.ant_flat_sol import AntFlatEnvironment
+from evorob.world.envs.ant_flat import AntFlatEnvironment
 
 """ 
     Controller optimisation: Ant flat terrain

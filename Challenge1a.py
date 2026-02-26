@@ -4,9 +4,9 @@ from typing import Optional
 
 import numpy as np
 
-from evorob.algorithms.ea_api_sol import EvoAlgAPI
+from evorob.algorithms.ea_api import EvoAlgAPI
 from evorob.world.ant_world import AntFlatWorld
-from evorob.world.robot.controllers.mlp_sol import NeuralNetworkController
+from evorob.world.robot.controllers.mlp import NeuralNetworkController
 
 """ 
     Controller optimisation: Ant flat terrain
@@ -21,7 +21,7 @@ def test_exercise_implementation():
     # Test 1: Environment
     print("\n[1/3] Testing Ant Environment...")
     try:
-        from evorob.world.envs.ant_flat_sol import AntFlatEnvironment
+        from evorob.world.envs.ant_flat import AntFlatEnvironment
 
         env = AntFlatEnvironment()
 

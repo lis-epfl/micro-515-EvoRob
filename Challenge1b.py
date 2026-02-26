@@ -4,9 +4,9 @@ from typing import Optional
 
 import numpy as np
 
-from evorob.algorithms.ea_api_sol import EvoAlgAPI
+from evorob.algorithms.ea_api import EvoAlgAPI
 from evorob.world.ant_world import AntFlatWorld
-from evorob.world.robot.controllers.sinoid_sol import OscillatoryController
+from evorob.world.robot.controllers.sinoid import OscillatoryController
 
 
 def test_exercise_implementation():
