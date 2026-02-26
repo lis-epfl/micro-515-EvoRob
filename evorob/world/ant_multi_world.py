@@ -3,7 +3,7 @@ from gymnasium.vector.sync_vector_env import SyncVectorEnv
 from gymnasium.wrappers import ClipAction, TimeLimit
 
 from evorob.world.base import World
-from evorob.world.envs.ant_flat_sol import AntFlatEnvironment
+from evorob.world.envs.ant_flat import AntFlatEnvironment
 from evorob.world.robot.controllers.base import Controller
 from evorob.world.robot.controllers.mlp import NeuralNetworkController
 
