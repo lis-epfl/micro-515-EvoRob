@@ -5,10 +5,10 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
-from evorob.algorithms.nsga_sol import NSGAII
+from evorob.algorithms.nsga import NSGAII
 from evorob.world.ant_multi_world import AntMultiWorld
 from evorob.world.ant_world import AntFlatWorld
-from evorob.world.robot.controllers.mlp_sol import NeuralNetworkController
+from evorob.world.robot.controllers.mlp import NeuralNetworkController
 
 """ 
     Multi-objective optimisation: Ant two-terrains
