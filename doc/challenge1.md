@@ -273,14 +273,15 @@ The given exercise should provide an fundamental understanding of practical aspe
 </div>
 
 To master Challenge 1, submit:
-- the weights and code of your final controller. The controller should be compatabile with the `controller` interface presented in the exercises.
-- a video rendering of your Ant.
-- a fitness graph showing the evolution of fitness over generations.
-- a textfile `README.md` describing shortly the selected algorithm, environment design and controller (max. 300 words).
+- the code of your final controller and the corresponding evolved weights (**Important:** your controller needs be compatabile with the `controller` interface),
+- the video rendering of your Ant,
+- the fitness graph showing the evolution of fitness over generations,
+- a textfile `README.md` describing shortly the selected algorithm, environment design and controller (max. 300 words),
+- the generated `evolution_score.txt` file.
 
-Provide all documents in a zipped folder with the following naming convention: `2026_micro_515_SCIPER_TEAMNAME_LASTNAME1_LASTNAME2.zip`.
+Submit these documents in a single zipped folder to Moodle at `Submission - Challenge 1` with the following naming convention: `2026_micro_515_TEAMNAME_LASTNAME1_LASTNAME2.zip`. One submission per team is sufficient.
 
-We will compare all submissions and publish the results on a leaderboard with the provided teamname at submission. While you might adapt the reward function, the final fitness evaluation should be performed on the default `Ant-v5` environment as provided in the evaluation script.
+We will evaluate all submissions and publish the results on the [leaderboard](https://lis-epfl.github.io/micro-515-EvoRob/) with the provided teamname at submission. While you might adapt the reward function, the final score will be evaluated on the default `Ant-v5` environment as provided in the evaluation function.
 
 
 # Questions?
