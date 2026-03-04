@@ -1,0 +1,19 @@
+{
+  "challenges": [
+    { "key": "challenge1", "label": "Challenge 1" },
+    { "key": "challenge2", "label": "Challenge 2" },
+    { "key": "challenge3", "label": "Challenge 3" }
+  ],
+  "teams": [
+    { "team": "Iron Wolves",      "challenge1": 4823, "challenge2": 310, "challenge3": 872 },
+    { "team": "ByteForce",        "challenge1": 3950, "challenge2": 275, "challenge3": 901 },
+    { "team": "Circuit Breakers", "challenge1": 4102, "challenge2": 198, "challenge3": 745 },
+    { "team": "NanoBot Crew",     "challenge1": 4990, "challenge2": 330, "challenge3": 810 },
+    { "team": "Sigma Dynamics",   "challenge1": 3600, "challenge2": 290, "challenge3": 868 },
+    { "team": "Quantum Gears",    "challenge1": 4450, "challenge2": 255, "challenge3": 790 },
+    { "team": "Delta Robotics",   "challenge1": 3120, "challenge2": 340, "challenge3": 830 },
+    { "team": "Axon Systems",     "challenge1": 4700, "challenge2": 220, "challenge3": 755 },
+    { "team": "Helix Drive",      "challenge1": 3880, "challenge2": 305, "challenge3": 893 },
+    { "team": "ROBO-7",           "challenge1": 4210, "challenge2": 265, "challenge3": 720 }
+  ]
+}

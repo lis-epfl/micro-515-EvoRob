@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MICRO-515 Evolutionary Robotics — Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #f5f5f5;
+      --surface:   #ffffff;
+      --surface2:  #f0f0f0;
+      --border:    #e0e0e0;
+      --accent:    #FF0000;
+      --gold:      #b8860b;
+      --silver:    #757575;
+      --bronze:    #a0522d;
+      --text:      #1a1a1a;
+      --muted:     #888888;
+      --green:     #2e7d32;
+      --amber:     #e65100;
+      --radius:    8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      font-weight: 400;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .page-wrap {
+      position: relative;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* EPFL red top stripe */
+    .epfl-stripe {
+      height: 4px;
+      background: var(--accent);
+      width: 100%;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+      animation: fadeDown 0.5s ease both;
+    }
+
+    .epfl-logo svg { display: block; }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-course {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .header-sub {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .stat-card {
+      flex: 1;
+      min-width: 130px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* ── TABS ── */
+    .tabs-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.15s ease both;
+    }
+
+    .tab {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .tab:hover { border-color: #bbb; color: var(--text); }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── TABLE WRAPPER ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 20px;
+      text-align: left;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    th:hover { color: var(--text); }
+
+    th .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      opacity: 0.3;
+      font-size: 10px;
+      transition: opacity 0.15s;
+    }
+
+    th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+
+    td {
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr { transition: background 0.1s; }
+    tbody tr:hover td { background: #fafafa; }
+
+    /* rank col */
+    td.rank {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      width: 52px;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .rank-1 .rank-badge { background: #fff8e1; color: var(--gold);   border: 1px solid #f5c518; }
+    .rank-2 .rank-badge { background: #f5f5f5; color: var(--silver); border: 1px solid #bdbdbd; }
+    .rank-3 .rank-badge { background: #fbe9e7; color: var(--bronze); border: 1px solid #c87941; }
+    .rank-other .rank-badge { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+    /* team col */
+    td.team-name {
+      font-family: 'Figtree', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .rank-1 td.team-name { color: var(--gold); }
+    .rank-2 td.team-name { color: var(--silver); }
+    .rank-3 td.team-name { color: var(--bronze); }
+
+    /* score pill */
+    .score-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      padding: 3px 10px;
+      border-radius: 5px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .score-high { background: #e8f5e9; border-color: #a5d6a7; color: var(--green); }
+    .score-mid  { background: #fff3e0; border-color: #ffcc80; color: var(--amber); }
+    .score-low  { background: #fce4ec; border-color: #f48fb1; color: #c62828;      }
+
+    /* total col */
+    td.total-col {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .total-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .total-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: #e0e0e0;
+      overflow: hidden;
+      max-width: 80px;
+    }
+
+    .total-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ── SEARCH ── */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.12s ease both;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    #search {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      font-size: 14px;
+      padding: 9px 14px 9px 38px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #search::placeholder { color: var(--muted); }
+    #search:focus { border-color: #aaa; }
+
+    /* ── EMPTY ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #bbb;
+      letter-spacing: 0.06em;
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+
+    footer span { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .row-anim { animation: rowIn 0.3s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      th, td { padding: 10px 12px; }
+      .total-bar { display: none; }
+      .site-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .header-right { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<div class="epfl-stripe"></div>
+<div class="page-wrap">
+
+  <header class="site-header">
+    <!-- EPFL Logomark (inline SVG reconstruction) -->
+    <div class="epfl-logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Logo_EPFL_2019.svg" alt="EPFL" height="32">
+    </div>
+    <div class="header-right">
+      <div class="header-course">MICRO-515 · Evolutionary Robotics</div>
+      <h1>Challenge Leaderboard</h1>
+    </div>
+  </header>
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <span class="stat-label">Teams</span>
+      <span class="stat-value" id="statTeams">—</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Challenges</span>
+      <span class="stat-value" id="statChallenges">—</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Top Score</span>
+      <span class="stat-value" id="statTop">—</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Average</span>
+      <span class="stat-value" id="statAvg">—</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Max Possible</span>
+      <span class="stat-value" id="statMax">—</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="search" type="text" placeholder="Search team…" oninput="renderTable()">
+    </div>
+  </div>
+
+  <div class="tabs-row" id="tabsRow"></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead id="tableHead"></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">No teams found.</div>
+  </div>
+
+  <footer>
+    <p>Note that this page may contain errors and the final results will be uploaded to the Moodle course page.</p>
+    <p>Last updated: <span id="lastUpdated">—</span> &nbsp;·&nbsp; MICRO-515 · EPFL · Prof. Floreano</p>
+  </footer>
+
+</div>
+
+<script>
+  // ── STATE ─────────────────────────────────────────────────────
+  let allData    = [];       // [{team, ch1, ch2, …, total}, …]
+  let challenges = [];       // [{key, label}, …]
+  let activeTab  = 'total';  // 'total' | challenge key
+  let sortCol    = 'total';
+  let sortDesc   = true;     // true = descending (higher score = better)
+
+  // ── SCORE COLOR CLASS ─────────────────────────────────────────
+  function scoreClass(val, max) {
+    const pct = val / max;
+    if (pct >= 0.85) return 'score-high';
+    if (pct >= 0.65) return 'score-mid';
+    return 'score-low';
+  }
+
+  // ── RENDER TABS ───────────────────────────────────────────────
+  function renderTabs() {
+    const row = document.getElementById('tabsRow');
+    row.innerHTML = [{ key: 'total', label: '⊞ Overall' }, ...challenges].map(({ key, label }) =>
+      `<div class="tab ${activeTab === key ? 'active' : ''}" onclick="setTab('${key}')">${label}</div>`
+    ).join('');
+  }
+
+  function setTab(tab) {
+    activeTab = tab;
+    sortCol   = tab;
+    sortDesc  = true;
+    renderTabs();
+    renderTable();
+  }
+
+  // ── RENDER TABLE ──────────────────────────────────────────────
+  function renderTable() {
+    const query = document.getElementById('search').value.trim().toLowerCase();
+    let rows = allData.filter(r => !query || r.team.toLowerCase().includes(query));
+
+    // sort — higher is always better for numeric cols
+    rows = rows.slice().sort((a, b) => {
+      const av = a[sortCol] ?? (sortCol === 'team' ? '' : 0);
+      const bv = b[sortCol] ?? (sortCol === 'team' ? '' : 0);
+      if (typeof av === 'string') return sortDesc ? av.localeCompare(bv) : bv.localeCompare(av);
+      return sortDesc ? bv - av : av - bv;   // desc = highest first
+    });
+
+    const maxTotal = Math.max(...allData.map(r => r.total));
+    const colMax   = {};
+    [...challenges.map(c => c.key), 'total'].forEach(k => {
+      colMax[k] = Math.max(...allData.map(r => r[k] ?? 0));
+    });
+
+    const visibleCols = activeTab === 'total' ? challenges : challenges.filter(c => c.key === activeTab);
+    const arrow = col => sortCol === col ? (sortDesc ? '↓' : '↑') : '↕';
+    const sorted = col => sortCol === col ? 'sorted' : '';
+
+    document.getElementById('tableHead').innerHTML = `<tr>
+      <th class="${sorted('rank')}" onclick="doSort('rank')"># <span class="sort-arrow">${arrow('rank')}</span></th>
+      <th class="${sorted('team')}" onclick="doSort('team')">Team <span class="sort-arrow">${arrow('team')}</span></th>
+      ${visibleCols.map(({ key, label }) =>
+        `<th class="${sorted(key)}" onclick="doSort('${key}')">${label} <span class="sort-arrow">${arrow(key)}</span></th>`
+      ).join('')}
+      ${activeTab === 'total'
+        ? `<th class="${sorted('total')}" onclick="doSort('total')">Total (norm.) <span class="sort-arrow">${arrow('total')}</span></th>`
+        : ''}
+    </tr>`;
+
+    const tbody = document.getElementById('tableBody');
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      document.getElementById('emptyState').style.display = 'block';
+      return;
+    }
+    document.getElementById('emptyState').style.display = 'none';
+
+    tbody.innerHTML = rows.map((r, i) => {
+      const rank    = i + 1;
+      const rankCls = rank <= 3 ? `rank-${rank}` : 'rank-other';
+      const barPct  = (r.total / maxTotal * 100).toFixed(1);
+
+      const scoreCells = visibleCols.map(({ key }) => {
+        const v = r[key] ?? '—';
+        const cls = typeof v === 'number' ? scoreClass(v, colMax[key]) : '';
+        return `<td><span class="score-pill ${cls}">${v}</span></td>`;
+      }).join('');
+
+      const totalCell = activeTab === 'total' ? `
+        <td class="total-col">
+          <div class="total-bar-wrap">
+            <span>${r.total}<span style="font-size:10px;color:var(--muted);font-weight:400"> / ${challenges.length * 100}</span></span>
+            <div class="total-bar"><div class="total-bar-fill" style="width:${barPct}%"></div></div>
+          </div>
+        </td>` : '';
+
+      return `<tr class="${rankCls} row-anim" style="animation-delay:${i * 35}ms">
+        <td class="rank"><span class="rank-badge">${rank}</span></td>
+        <td class="team-name">${r.team}</td>
+        ${scoreCells}
+        ${totalCell}
+      </tr>`;
+    }).join('');
+  }
+
+  function doSort(col) {
+    if (sortCol === col) sortDesc = !sortDesc;
+    else { sortCol = col; sortDesc = true; }
+    renderTable();
+  }
+
+  // ── STATS ─────────────────────────────────────────────────────
+  function renderStats() {
+    const totals = allData.map(r => r.total);
+    const maxPossible = challenges.length * 100;
+    document.getElementById('statTeams').textContent      = allData.length;
+    document.getElementById('statChallenges').textContent = challenges.length;
+    document.getElementById('statTop').textContent        = Math.max(...totals).toFixed(1);
+    document.getElementById('statAvg').textContent        = (totals.reduce((a, b) => a + b, 0) / totals.length).toFixed(1);
+    document.getElementById('statMax').textContent        = maxPossible;
+  }
+
+  // ── FALLBACK DUMMY DATA (used when scores.json cannot be loaded) ──
+  const DUMMY = {
+    "challenges": [
+      { "key": "challenge1", "label": "Challenge 1" },
+      { "key": "challenge2", "label": "Challenge 2" },
+      { "key": "challenge3", "label": "Challenge 3" }
+    ],
+    "teams": [
+      { "team": "Dummy Wolves",      "challenge1": 4823, "challenge2": 310, "challenge3": 872 },
+      { "team": "DummyForce",        "challenge1": 3950, "challenge2": 275, "challenge3": 901 },
+      { "team": "Circuit Dummies", "challenge1": 4102, "challenge2": 198, "challenge3": 745 },
+    ]
+  };
+
+  // ── LOAD scores.json (falls back to dummy data) ───────────────
+  async function loadData() {
+    let json;
+    try {
+      const res = await fetch('./scores.json');
+      if (!res.ok) throw new Error();
+      json = await res.json();
+    } catch {
+      json = DUMMY;
+    }
+
+      challenges = json.challenges;
+
+      // compute per-challenge max for normalization
+      const challengeMax = {};
+      challenges.forEach(({ key }) => {
+        challengeMax[key] = Math.max(...json.teams.map(t => t[key] || 0));
+      });
+
+      // total = sum of (raw / max) * 100 per challenge → out of challenges.length * 100
+      allData = json.teams.map(t => {
+        const total = challenges.reduce((sum, { key }) => {
+          return sum + (challengeMax[key] > 0 ? (t[key] || 0) / challengeMax[key] * 100 : 0);
+        }, 0);
+        return { ...t, total: parseFloat(total.toFixed(1)), _challengeMax: challengeMax };
+      });
+
+      document.getElementById('lastUpdated').textContent =
+        new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+      renderStats();
+      renderTabs();
+      renderTable();
+  }
+
+  loadData();
+</script>
+</body>
+</html>
