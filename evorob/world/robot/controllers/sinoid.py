@@ -43,8 +43,8 @@ class OscillatoryController(Controller):
             actions: Array of actuator commands, shape (output_size,) or (batch_size, output_size)
         """
         # TODO: Compute oscillatory actions using sine waves
-        # Formula: amplitude * sin(2*pi*frequency*time + phase)
-        # Then increment self.time_step by 0.01
+        # Compute action with parameterized sine wave.
+        # Then increment self.time_step by e.g. 0.01
         # Clip actions to [-1.0, 1.0]
         #
         # For vectorized environments (batch of observations):
@@ -61,9 +61,7 @@ class OscillatoryController(Controller):
         """
         # TODO: Extract parameters from weights array
         # weights structure: [amp1, amp2, ..., freq1, freq2, ..., phase1, phase2, ...]
-        # - self.amplitudes = weights[0:output_size]
-        # - self.frequencies = 5 * weights[output_size:2*output_size] (scale to ~[0, 5] Hz)
-        # - self.phases = pi * weights[2*output_size:3*output_size] (scale to ~[0, pi])
+        # Update self.amplitudes, self.frequencies, self.phases accordingly
         # Reset time to 0
         raise NotImplementedError("TODO: Implement parameter setting")
 

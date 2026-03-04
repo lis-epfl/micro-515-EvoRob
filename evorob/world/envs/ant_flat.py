@@ -108,17 +108,16 @@ class AntFlatEnvironment(MujocoEnv):
 
     def _get_rew(self, x_velocity: float, action):
         # TODO: Implement reward function with three components:
-        # 1. forward_reward = x_velocity * forward_reward_weight (weight=1.0)
-        # 2. healthy_reward = healthy_reward_weight (weight=1.0)
-        # 3. ctrl_cost = ctrl_cost_weight * sum of squared actions (weight=0.5)
-        # Final reward = forward_reward + healthy_reward - ctrl_cost
+        # 1. forward_reward = ...
+        # 2. healthy_reward = ...
+        # 3. ctrl_cost = ...
+        # Final reward is the sum of these three components.
         # Return: (reward, reward_info_dict)
         raise NotImplementedError("TODO: Implement reward function")
 
     def _get_termination(self):
         # TODO: Robot should terminate when:
-        # - Any value in state is not finite (check with np.isfinite(state).all())
-        # - Torso height (state[2]) is below 0.26 or above 1.0
+        # - Torso height is below 0.26 or above 1.0
         # Return True if NOT healthy (i.e., should terminate)
-        # Hint: Use self.state_vector() to get current state
+        # Hint: Use self.state_vector() to get current state.
         raise NotImplementedError("TODO: Implement termination function")

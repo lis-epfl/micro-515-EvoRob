@@ -34,8 +34,6 @@ class NeuralNetworkController(Controller):
         self.hidden_to_output = ...  # TODO!
 
         # TODO: Compute number of parameters in each layer
-        # - self.n_params_i2h = input_size * hidden_size
-        # - self.n_params_h2o = hidden_size * output_size
         self.n_params_i2h = ...  # TODO!
         self.n_params_h2o = ...  # TODO!
 
@@ -52,8 +50,8 @@ class NeuralNetworkController(Controller):
             action: Output array, shape (output_size,) or (batch_size, output_size)
         """
         # TODO: Perform forward pass computation
-        # 1. Hidden layer: hidden = tanh(state @ input_to_hidden.T)
-        # 2. Output layer: output = tanh(hidden @ hidden_to_output.T)
+        # 1. Hidden layer: hidden = ...
+        # 2. Output layer: output = ...
         # 3. Clip output to [-1, 1] using np.clip()
         #
         # Hint: Use @ operator or np.matmul for matrix multiplication
@@ -84,7 +82,7 @@ class NeuralNetworkController(Controller):
     def get_num_params(self):
         # To provide a genetic encoding for our neural network controller,
         # we compute and store the number of parameters in our NN class.
-        # TODO: Return sum of parameters in both layers!
+        # TODO: Return the total number of parameters in both layers!
         raise NotImplementedError
 
     def reset_controller(self, batch_size=1) -> None:
