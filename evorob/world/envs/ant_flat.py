@@ -104,7 +104,10 @@ class AntFlatEnvironment(MujocoEnv):
         # - velocity: self.data.qvel.flatten() (14 values)
         # This gives 27 total dimensions, making the task translation-invariant
         # Hint: Use np.concatenate() to combine both arrays
-        raise NotImplementedError("TODO: Implement observation function")
+        position_obs = self.data.qpos[2:].flatten() 
+        velocity_obs = self.data.qvel.flatten()
+        observation = np.concatenate((position_obs, velocity_obs))
+        return observation
 
     def _get_rew(self, x_velocity: float, action):
         # TODO: Implement reward function with three components:
@@ -113,11 +116,23 @@ class AntFlatEnvironment(MujocoEnv):
         # 3. ctrl_cost = ...
         # Final reward is the sum of these three components.
         # Return: (reward, reward_info_dict)
-        raise NotImplementedError("TODO: Implement reward function")
+        forward_reward =  x_velocity
+        healthy_reward = 1.0 if not self._get_termination() else 0
+        ctrl_cost = 0.2 * np.sum(np.square(action))
+        reward = forward_reward + healthy_reward
+        return reward, {
+            "reward_forward": forward_reward,
+            "reward_survive": healthy_reward,
+            "reward_ctrl": ctrl_cost,
+        }
 
     def _get_termination(self):
         # TODO: Robot should terminate when:
         # - Torso height is below 0.26 or above 1.0
         # Return True if NOT healthy (i.e., should terminate)
         # Hint: Use self.state_vector() to get current state.
-        raise NotImplementedError("TODO: Implement termination function")
+        torso_height = self.state_vector()[2]
+        if torso_height < 0.26 or torso_height > 1.0:   
+            return True
+        else:
+            return False

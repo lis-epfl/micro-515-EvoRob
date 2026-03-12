@@ -380,7 +380,7 @@ if __name__ == "__main__":
     # Uncomment to run full evolution:
     run_evolution_oscillatory_controller(
         num_generations=100,
-        population_size=10,
+        population_size=250,
         ckpt_interval=5,
         checkpoint_path=None,
         run_evaluation=True,
