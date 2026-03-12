@@ -131,7 +131,67 @@ python Challenge1c.py
 
 ---
 
-## 5. Monitoring Your Job
+## 5. Connecting via VS Code (Visual Interface)
+
+Instead of a plain terminal, you can use **VS Code's Remote SSH extension** to browse files visually and use an integrated terminal — all connected directly to Jed.
+
+### Prerequisites
+
+Install the **Remote - SSH** extension in VS Code:
+- Open VS Code → Extensions (`Ctrl+Shift+X`) → search **Remote - SSH** → Install
+
+![VS code add ssh remote extension](imgs/add_ssh.png)
+
+### Step-by-Step
+
+**Step 1** — Click the **"≶"** button in the very bottom-left corner of VS Code.
+
+> 💡 This is the Remote Connection indicator. If you don't see it, make sure the Remote - SSH extension is installed.
+
+![VS Code bottom-left remote button](https://code.visualstudio.com/assets/docs/remote/ssh/ssh-statusbar.png)
+
+---
+
+**Step 2** — In the menu that appears at the top, select **"Connect to Host..."**
+
+![VS code connect host](imgs/add_remote.png)
+
+---
+
+**Step 3** — Type the following and press Enter:
+
+```
+<username>@jed.hpc.epfl.ch
+```
+
+> Replace `<username>` with your EPFL Gaspar username.
+
+---
+
+**Step 4** — VS Code may suggest a config option (e.g. *"Add to SSH config"*) — click it. If the bottom-right corner shows a prompt, click it and select the host again.
+
+---
+
+**Step 5** — A **new VS Code window** opens and prompts you for your password. Enter your Gaspar credentials.
+
+---
+
+**Step 6** — Once connected, you can:
+- Click **File → Open Folder** to browse your cluster directories visually
+- Open a terminal via **Terminal → New Terminal** — it is automatically connected to Jed
+
+---
+
+### Further Resources
+
+| Resource | Link |
+|---|---|
+| VS Code Official Tutorial | https://code.visualstudio.com/docs/remote/ssh |
+| Video Tutorial (YouTube) | https://www.youtube.com/watch?v=IasCAoj70I4 |
+
+---
+
+## 6. Monitoring Your Job
 
 Check the status of your submitted jobs:
 
@@ -153,7 +213,7 @@ tail -f logs/challenge1b_<job_id>.out
 
 ---
 
-## 6. Tips
+## 7. Tips
 
 - **`--time`**: Adjust the time limit based on your training duration. Challenge 1b (100 generations, population 10) is relatively fast; Challenge 1c with 10M timesteps may take several hours.
 - **Checkpoints**: Both scripts save results to `./results/`. Make sure this folder is writable.
