@@ -109,7 +109,7 @@ class AntFlatEnvironment(MujocoEnv):
         observation = np.concatenate((position_obs, velocity_obs))
         return observation
 
-    def _get_rew(self, x_velocity: float, action):
+    def _get_rew(self, x_velgit statusocity: float, action):
         # TODO: Implement reward function with three components:
         # 1. forward_reward = ...
         # 2. healthy_reward = ...

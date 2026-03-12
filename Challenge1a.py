@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 import gymnasium as gym
-import imageio
+#import imageio
 import numpy as np
 
 from evorob.algorithms.ea_api import EvoAlgAPI
@@ -371,6 +371,7 @@ def evaluate_checkpoint(
     mean_reward = float(np.mean(episode_rewards))
     std_reward = float(np.std(episode_rewards))
     print(f"\nMean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
+    """
 
     # --- Record video ---
     print("\nRecording video...")
@@ -407,7 +408,7 @@ def evaluate_checkpoint(
     imageio.mimwrite(video_path, frames, fps=20)
     print(f"Video saved to: {video_path}")
 
-    score_path = os.path.join(output_dir, "evaluation_score.txt")
+    score_path = os.path.join(output_dir, "evaluation_score.txt")"""
     with open(score_path, "w") as f:
         f.write("=" * 50 + "\n")
         f.write("MICRO-515 Challenge 1a - Evaluation Results\n")
