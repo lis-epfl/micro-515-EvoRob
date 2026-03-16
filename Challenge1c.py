@@ -109,6 +109,7 @@ def single_replay_checkpoint(
     )
 
     # Wrap with video recorder
+    
     eval_env = VecVideoRecorder(
         eval_env,
         video_folder=video_folder,
@@ -167,7 +168,7 @@ def replay_checkpoint(checkpoint_path: str) -> None:
         return
 
     eval_env = make_vec_env(
-        AntFlatEnvironment, n_envs=1, env_kwargs={"render_mode": "human"}
+        AntFlatEnvironment, n_envs=1, env_kwargs={"render_mode": None}
     )
     eval_env = VecNormalize.load(stats_path, eval_env)
     eval_env.training = False
