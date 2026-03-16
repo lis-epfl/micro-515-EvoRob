@@ -6,7 +6,7 @@ from gymnasium.spaces import Box
 from gymnasium.envs.mujoco import MujocoEnv
 
 
-class AntFlatEnvironment(MujocoEnv):
+class rm -rf micro-515-EvoRob/.gitAntFlatEnvironment(MujocoEnv):
     metadata = {
         "render_modes": [
             "human",
