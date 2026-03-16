@@ -118,8 +118,10 @@ class AntFlatEnvironment(MujocoEnv):
         # Return: (reward, reward_info_dict)
         forward_reward =  x_velocity
         healthy_reward = 1.0 if not self._get_termination() else 0
+        height = self.state_vector()[2]
+        posture_penalty = 1.0 * abs(height - 0.5)
         ctrl_cost = 0.2 * np.sum(np.square(action))
-        reward = forward_reward + healthy_reward
+        reward = forward_reward + healthy_reward - ctrl_cost - posture_penalty
         return reward, {
             "reward_forward": forward_reward,
             "reward_survive": healthy_reward,
