@@ -168,7 +168,7 @@ def replay_checkpoint(checkpoint_path: str) -> None:
         return
 
     eval_env = make_vec_env(
-        AntFlatEnvironment, n_envs=1, env_kwargs={"render_mode": None}
+        AntFlatEnvironment, n_envs=1, env_kwargs={"render_mode": "human"}
     )
     eval_env = VecNormalize.load(stats_path, eval_env)
     eval_env.training = False
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         total_timesteps=10_000, # recommended: 10_000_000 for good performance
         num_envs=16,
         batch_size=1024,
-        run_evaluation=True,
+        run_evaluation=False,
         checkpoint_path="./results/ppo_ckpts"
     )
 
