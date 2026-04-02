@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import VecNormalize, VecVideoRecorder, Dum
 
 from evorob.world.envs.ant_flat import AntFlatEnvironment
 
+
 """ 
     Controller optimisation: Ant flat terrain
 """
