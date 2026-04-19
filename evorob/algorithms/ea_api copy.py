@@ -3,7 +3,6 @@ import numpy as np
 from evorob.algorithms.base_ea import EA
 from cma import CMAEvolutionStrategy
 
-
 class EvoAlgAPI(EA):
     """Evolutionary algorithm API wrapper.
 
@@ -42,29 +41,8 @@ class EvoAlgAPI(EA):
         self.f_best_so_far = -np.inf
         self.x = None
         self.f = None
-
-        # NEW: allow optional warm-start center and sigma
-        sigma = kwargs.get("sigma", 0.5)
-        x0 = kwargs.get("x0", None)
-
-        if x0 is None:
-            x0 = self.n_params * [0]
-        else:
-            x0 = np.asarray(x0, dtype=float)
-            if x0.shape != (self.n_params,):
-                raise ValueError(
-                    f"x0 shape mismatch: expected {(self.n_params,)}, got {x0.shape}"
-                )
-            x0 = x0.tolist()
-
-        self.cma_es = CMAEvolutionStrategy(
-            x0,
-            sigma,
-            {
-                'popsize': self.population_size,
-                "CMA_diagonal": False,
-            }
-        )
+        self.cma_es = CMAEvolutionStrategy(self.n_params * [0], 0.5, {'popsize': self.population_size,}) 
+  
 
     def ask(self) -> np.ndarray:
         """Sample population from the algorithm.
@@ -91,7 +69,6 @@ class EvoAlgAPI(EA):
         # Note: Some algorithms minimize, others maximize.
         # Adjust accordingly (negate fitnesses if needed).
         self.cma_es.tell(population, -fitnesses)  # CMA-ES minimizes, so negate fitnesses
-
         # After updating the EA, do bookkeeping for checkpointing:
         self.full_f.append(fitnesses)
         self.full_x.append(population)
@@ -107,3 +84,4 @@ class EvoAlgAPI(EA):
         if save_checkpoint:
             self.save_checkpoint()
         self.current_gen += 1
+

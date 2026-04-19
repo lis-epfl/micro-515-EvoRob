@@ -1,84 +1,97 @@
 import numpy as np
-
 from evorob.world.robot.controllers.base import Controller
 
-class OscillatoryController(Controller):
-    """Simple oscillatory controller using sine waves for each actuator.
 
-    This controller generates periodic motion patterns without using observations.
-    Each joint oscillates with its own amplitude, frequency, and phase.
+class PhaseOscillatorController(Controller):
+    """
+    Per-joint phase oscillator used ONLY to generate rhythmic phase features.
+
+    It does NOT output motor actions.
+    It outputs:
+        [sin(phi_i), cos(phi_i)] for each joint i
+
+    Parameters per joint:
+        - frequency
+        - phase offset
+
+    Total params = 2 * output_size
     """
 
     def __init__(
-        self, input_size: int = 0, output_size: int = None, hidden_size: int = 0
+        self,
+        output_size: int = 8,
+        dt: float = 0.01,
+        default_frequency: float = 1.0,
     ):
-        """Initialize the oscillatory controller.
-
-        Args:
-            output_size: Number of actuators to control
-            input_size: Not used, kept for API compatibility
-        """
-        assert output_size is not None, (
-            "output_size must be specified for OscillatoryController"
-        )
-        self.output_size = output_size
+        self.output_size = int(output_size)
+        self.dt = float(dt)
         self.time_step = 0.0
-        self.n_params = self.get_num_params()
 
-        # TODO: Initialize parameters for oscillatory control
-        # You need 3 parameters per actuator: amplitude, frequency, phase
-        # - self.amplitudes: uniform random in [0.1, 1.0] (shape: output_size)
-        # - self.frequencies: uniform random in [0.5, 2.0] (shape: output_size)
-        # - self.phases: uniform random in [0, 2*pi] (shape: output_size)
-        # Hint: Use np.random.uniform(low, high, size)
-        raise NotImplementedError("TODO: Initialize oscillatory parameters")
+        self.frequencies = np.full(
+            self.output_size, default_frequency, dtype=np.float32
+        )
+        self.phases = np.zeros(self.output_size, dtype=np.float32)
+
+    def reset_controller(self, batch_size=1):
+        self.time_step = 0.0
+
+    def step_time(self):
+        self.time_step += self.dt
+
+    def get_phase(self):
+        return 2.0 * np.pi * self.frequencies * self.time_step + self.phases
+
+    def get_phase_features(self, state=None):
+        """
+        Returns:
+            - (2 * output_size,) for single input / no input
+            - (batch_size, 2 * output_size) for batched input
+
+        If state is batched, tiles the same phase feature vector across the batch.
+        """
+        phase = self.get_phase()
+        sin_phase = np.sin(phase).astype(np.float32)
+        cos_phase = np.cos(phase).astype(np.float32)
+        feat = np.concatenate([sin_phase, cos_phase], axis=0)
+
+        if state is None:
+            return feat
+
+        x = np.asarray(state)
+        if x.ndim == 2:
+            return np.tile(feat[None, :], (x.shape[0], 1))
+
+        return feat
 
     def get_action(self, state):
-        """Generate oscillatory actions based on time.
-
-        Args:
-            state: Observation (not used by this controller)
-
-        Returns:
-            actions: Array of actuator commands, shape (output_size,) or (batch_size, output_size)
         """
-        # TODO: Compute oscillatory actions using sine waves
-        # Compute action with parameterized sine wave.
-        # Then increment self.time_step by e.g. 0.01
-        # Clip actions to [-1.0, 1.0]
-        #
-        # For vectorized environments (batch of observations):
-        # Check if state is 2D, if so replicate actions for each environment
-        # Hint: Use np.tile(actions, (batch_size, 1))
-        raise NotImplementedError("TODO: Implement oscillatory action generation")
+        Kept for API compatibility.
+        Returns phase features, not actions.
+        """
+        feat = self.get_phase_features(state)
+        self.step_time()
+        return feat
 
     def set_weights(self, weights):
-        """Set controller parameters from flat array.
-
-        Args:
-            weights: Flat array of size (3 * output_size,)
-                    [amplitudes, frequencies, phases]
         """
-        # TODO: Extract parameters from weights array
-        # weights structure: [amp1, amp2, ..., freq1, freq2, ..., phase1, phase2, ...]
-        # Update self.amplitudes, self.frequencies, self.phases accordingly
-        # Reset time to 0
-        raise NotImplementedError("TODO: Implement parameter setting")
+        weights format:
+            first output_size  -> frequencies
+            last output_size   -> phases
+        """
+        weights = np.asarray(weights, dtype=np.float32).ravel()
+        expected = 2 * self.output_size
+        if len(weights) != expected:
+            raise ValueError(f"Expected {expected} params, got {len(weights)}")
 
-    def geno2pheno(self, genotype):
-        """Alias for set_weights."""
-        self.set_weights(genotype)
+        self.frequencies = weights[:self.output_size].copy().astype(np.float32)
+        self.phases = weights[self.output_size:].copy().astype(np.float32)
         self.reset_controller()
 
+    def get_weights(self):
+        return np.concatenate([self.frequencies, self.phases]).astype(np.float32)
+
     def get_num_params(self):
-        """Return total number of parameters.
+        return 2 * self.output_size
 
-        Returns:
-            int: 3 * output_size (amplitude, frequency, phase for each actuator)
-        """
-        # TODO: Return the total number of parameters
-        raise NotImplementedError("TODO: Compute number of parameters")
-
-    def reset_controller(self):
-        """Reset the controller state (time)."""
-        self.time_step = 0.0
+    def geno2pheno(self, genotype):
+        self.set_weights(genotype)

@@ -62,7 +62,7 @@ def test_exercise_implementation():
     # Test 2: Evolutionary Algorithm
     print("\n[2/2] Testing Evolutionary Algorithm API...")
     try:
-        ea = EvoAlgAPI(n_params=24, population_size=20, sigma=0.5)
+        ea = EvoAlgAPI(n_params=24, population_size=20, sigma=0.01)
         population = ea.ask()
         assert population.shape == (20, 24), (
             f"Population shape should be (20, 24), got {population.shape}"
@@ -147,6 +147,7 @@ def run_evolution_oscillatory_controller(
     run_evaluation: bool = True,
     compute_score: bool = True,
     random_seed: int = 42,
+    initial_x: Optional[np.ndarray] = None,
 ) -> None:
     """Run evolutionary optimization for robot controller."""
     np.random.seed(random_seed)
@@ -172,7 +173,7 @@ def run_evolution_oscillatory_controller(
     # Create evolutionary algorithm with checkpointing
     num_params = world.n_params
     ea = EvoAlgAPI(
-        num_params, population_size=population_size, sigma=0.5, output_dir=ckpt_dir
+        num_params, population_size=population_size, sigma=0.5, output_dir=ckpt_dir,initial_x=initial_x
     )
 
     # Evolution loop (checkpointing happens automatically in ea.tell())
@@ -372,19 +373,30 @@ def evaluate_checkpoint(
     print(f"\n{'=' * 50}")
     print(f"  FINAL SCORE: {mean_reward:.2f} +/- {std_reward:.2f}")
     print(f"{'=' * 50}")
-
+def get_trot_initialization(output_size=8):
+    # Amplitudes (Weight ~0.5)
+    amplitudes = np.full(output_size, 0.5)
+    # Frequencies (Weight ~0.3 -> maps to ~1.5Hz if scaled by 5 in sinoid.py)
+    frequencies = np.full(output_size, 0.3)
+    # Phases (Trot pattern)
+    phases = np.zeros(output_size)
+    # 180 degree offset for diagonal pairs
+    # Indices 2,3 (Back-Left) and 4,5 (Front-Right)
+    phases[2:6] = np.pi 
+    return np.concatenate([amplitudes, frequencies, phases])
 
 if __name__ == "__main__":
     test_exercise_implementation()
 
     # Uncomment to run full evolution:
     run_evolution_oscillatory_controller(
-        num_generations=100,
-        population_size=10,
+        num_generations=600,
+        population_size=60,
         ckpt_interval=5,
         checkpoint_path=None,
         run_evaluation=True,
         random_seed=42,
+        initial_x=get_trot_initialization(),
     )
 
     # ----------------------------------------------------------------

@@ -4,13 +4,13 @@ from pathlib import Path
 from typing import Optional
 
 import gymnasium as gym
-import imageio
+#import imageio
 import numpy as np
 
 from evorob.algorithms.ea_api import EvoAlgAPI
 from evorob.utils.filesys import get_last_checkpoint_dir
 from evorob.world.ant_world import AntFlatWorld
-from evorob.world.robot.controllers.mlp import NeuralNetworkController
+from evorob.world.robot.controllers.mlp_sol import NeuralNetworkController
 
 """
     Controller optimisation: Ant flat terrain
@@ -39,7 +39,8 @@ def test_exercise_implementation():
             f"({env.data.qvel.size}) = {expected_obs_size}, got {obs.shape[0]}"
         )
 
-        # Test _get_rew(): should return (reward, reward_info_dict) with three components
+        # Test 
+        # (): should return (reward, reward_info_dict) with three components
         action = np.zeros(env.action_space.shape[0])  # zero action
         obs, reward, terminated, truncated, info = env.step(action)
         assert "reward_forward" in info, "Missing reward_forward - check _get_rew()"
@@ -284,7 +285,8 @@ def run_evolution_neural_controller(
 
                 if np.logical_or(terminated, truncated):
                     trial_count += 1
-                    print(f"Trial {trial_count} reward: {float(trial_reward):.2f}")
+                    print(trial_reward)
+                    print(f"Trial {trial_count} reward: {float(trial_reward[0]):.2f}")
                     trial_reward = 0.0
                     obs, _ = evaluation_env.reset()
 
@@ -369,6 +371,7 @@ def evaluate_checkpoint(
     mean_reward = float(np.mean(episode_rewards))
     std_reward = float(np.std(episode_rewards))
     print(f"\nMean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
+    """
 
     # --- Record video ---
     print("\nRecording video...")
@@ -405,7 +408,7 @@ def evaluate_checkpoint(
     imageio.mimwrite(video_path, frames, fps=20)
     print(f"Video saved to: {video_path}")
 
-    score_path = os.path.join(output_dir, "evaluation_score.txt")
+    score_path = os.path.join(output_dir, "evaluation_score.txt")"""
     with open(score_path, "w") as f:
         f.write("=" * 50 + "\n")
         f.write("MICRO-515 Challenge 1a - Evaluation Results\n")
@@ -436,8 +439,8 @@ if __name__ == "__main__":
 
     # Uncomment to run full evolution:
     run_evolution_neural_controller(
-        num_generations=100,
-        population_size=10,
+        num_generations=300,
+        population_size=280,
         ckpt_interval=5,
         checkpoint_path=None,
         run_evaluation=True,
@@ -450,6 +453,6 @@ if __name__ == "__main__":
     # on the standard Gymnasium Ant-v5 and get your final score + video.
     # Replace the path with your actual checkpoint folder.
     # ----------------------------------------------------------------
-    # evaluate_checkpoint(
-    #     checkpoint_dir="results/20260304_174619_neural_controller_ckpts",
-    # )
+    evaluate_checkpoint(
+     checkpoint_dir="results/20260304_174619_neural_controller_ckpts",
+     )

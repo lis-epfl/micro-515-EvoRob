@@ -31,6 +31,7 @@ class AntFlatEnvironment(MujocoEnv):
             render_mode=render_mode,
             default_camera_config={
                 "distance": 4.0,
+
             },
             **kwargs,
         )
@@ -82,7 +83,7 @@ class AntFlatEnvironment(MujocoEnv):
         x_velocity, y_velocity = xy_velocity
 
         observation = self._get_obs()
-        reward, reward_info = self._get_rew(x_velocity, action)
+        reward, reward_info = self._get_rew(x_velocity, y_velocity, action)
         terminated = self._get_termination()
         info = {
             "x_position": self.data.qpos[0],
@@ -104,20 +105,43 @@ class AntFlatEnvironment(MujocoEnv):
         # - velocity: self.data.qvel.flatten() (14 values)
         # This gives 27 total dimensions, making the task translation-invariant
         # Hint: Use np.concatenate() to combine both arrays
-        raise NotImplementedError("TODO: Implement observation function")
-
-    def _get_rew(self, x_velocity: float, action):
-        # TODO: Implement reward function with three components:
-        # 1. forward_reward = ...
-        # 2. healthy_reward = ...
-        # 3. ctrl_cost = ...
-        # Final reward is the sum of these three components.
-        # Return: (reward, reward_info_dict)
-        raise NotImplementedError("TODO: Implement reward function")
+        position_obs = self.data.qpos[2:].flatten() 
+        velocity_obs = self.data.qvel.flatten()
+        observation = np.concatenate((position_obs, velocity_obs))
+        return observation
 
     def _get_termination(self):
         # TODO: Robot should terminate when:
         # - Torso height is below 0.26 or above 1.0
         # Return True if NOT healthy (i.e., should terminate)
         # Hint: Use self.state_vector() to get current state.
-        raise NotImplementedError("TODO: Implement termination function")
+        torso_height = self.state_vector()[2]
+        if torso_height < 0.26 or torso_height > 1.0:   
+            return True
+        else:
+            return False
+    def _get_rew(self, x_velocity: float, y_velocity: float, action):
+        forward_reward = 5.0 * x_velocity
+        healthy_reward = 1.0 if not self._get_termination() else 0.0
+
+        ctrl_cost = 0.01 * np.sum(np.square(action))
+        drift_penalty = 0.02 * (y_velocity ** 2)
+
+        quat = self.data.qpos[3:7].copy()   # [w, x, y, z]
+        orientation_penalty = 0.2 * (quat[1] ** 2 + quat[2] ** 2)
+
+        reward = (
+            forward_reward
+            + healthy_reward
+            - ctrl_cost
+    
+           
+        )
+
+        return reward, {
+            "reward_forward": forward_reward,
+            "reward_survive": healthy_reward,
+            "reward_ctrl": ctrl_cost,
+            "reward_drift": drift_penalty,
+            "reward_orientation": orientation_penalty,
+        }
