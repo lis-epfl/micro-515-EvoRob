@@ -134,8 +134,7 @@ class AntFlatEnvironment(MujocoEnv):
             forward_reward
             + healthy_reward
             - ctrl_cost
-            - drift_penalty
-            - orientation_penalty
+    
            
         )
 

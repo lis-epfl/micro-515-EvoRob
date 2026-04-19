@@ -10,7 +10,7 @@ import numpy as np
 from evorob.algorithms.ea_api import EvoAlgAPI
 from evorob.utils.filesys import get_last_checkpoint_dir
 from evorob.world.ant_world import AntFlatWorld
-from evorob.world.robot.controllers.mlp import NeuralNetworkController
+from evorob.world.robot.controllers.mlp_sol import NeuralNetworkController
 
 """
     Controller optimisation: Ant flat terrain
