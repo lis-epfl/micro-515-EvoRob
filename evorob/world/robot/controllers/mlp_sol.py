@@ -1,5 +1,4 @@
 import numpy as np
-
 from evorob.world.robot.controllers.base import Controller
 
 
@@ -8,24 +7,26 @@ class NeuralNetworkController(Controller):
         self,
         input_size: int,
         output_size: int,
-        hidden_size: int = 16,
+        hidden_size: int = 8,
     ):
-        """
-        A minimalistic Neural Network, using numpy.
-        - One hidden layer with tanh activation
-        - Output layer with tanh activation
-
-        :param int input_size: Size of input vector
-        :param int hidden_size: Size of hidden layer
-        :param int output_size: Size of output vector
-        """
         self.n_input = input_size
         self.n_output = output_size
         self.n_hidden = hidden_size
+
+        # Number of parameters
         self.n_con1 = input_size * hidden_size
         self.n_con2 = hidden_size * output_size
+        self.n_bias1 = hidden_size
+        self.n_bias2 = output_size
+
+        # Weights
         self.lin = np.random.uniform(-1, 1, (hidden_size, input_size))
         self.output = np.random.uniform(-1, 1, (output_size, hidden_size))
+
+        # Biases
+        self.b1 = np.random.uniform(-1, 1, hidden_size)
+        self.b2 = np.random.uniform(-1, 1, output_size)
+
         self.n_params = self.get_num_params()
 
     def get_action(self, state):
@@ -33,31 +34,46 @@ class NeuralNetworkController(Controller):
             "State does not correspond with expected input size"
         )
 
-        hid_l = np.tanh(state @ self.lin.T)
-        output_l = np.tanh(hid_l @ self.output.T)
+        hid_l = np.tanh(state @ self.lin.T + self.b1)
+        output_l = np.tanh(hid_l @ self.output.T + self.b2)
+
         return np.clip(output_l, -1.0, 1.0)
 
     def set_weights(self, weights):
         """
-        Set weights of NN.
-
-        :param np.ndarray weights: Vector of weights
+        Set weights of NN (including biases).
         """
-        assert len(weights) == self.n_con1 + self.n_con2, (
-            f"Got {len(weights)} but expected {self.n_con1 + self.n_con2}"
+        expected = self.n_con1 + self.n_con2 + self.n_bias1 + self.n_bias2
+        assert len(weights) == expected, (
+            f"Got {len(weights)} but expected {expected}"
         )
-        weight_matrix1 = weights[: self.n_con1].reshape(self.lin.shape)
-        weight_matrix2 = weights[-self.n_con2 :].reshape(self.output.shape)
-        self.lin = weight_matrix1
-        self.output = weight_matrix2
+
+        idx = 0
+
+        # Layer 1 weights
+        self.lin = weights[idx : idx + self.n_con1].reshape(self.lin.shape)
+        idx += self.n_con1
+
+        # Layer 2 weights
+        self.output = weights[idx : idx + self.n_con2].reshape(self.output.shape)
+        idx += self.n_con2
+
+        # Biases
+        self.b1 = weights[idx : idx + self.n_bias1]
+        idx += self.n_bias1
+
+        self.b2 = weights[idx : idx + self.n_bias2]
 
     def geno2pheno(self, genotype):
-        """Alias for set_weights (genotype to phenotype mapping)."""
         self.set_weights(genotype)
 
     def get_num_params(self):
-        """Return the total number of parameters in the network."""
-        return self.n_con1 + self.n_con2
+        return (
+            self.n_con1
+            + self.n_con2
+            + self.n_bias1
+            + self.n_bias2
+        )
 
     def reset_controller(self, batch_size=1) -> None:
         pass

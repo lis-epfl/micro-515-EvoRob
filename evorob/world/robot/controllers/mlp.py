@@ -7,7 +7,7 @@ class NeuralNetworkController(Controller):
     def __init__(
         self,
         input_size: 27,
-        output_size: 8,
+        output_size: 16,
         hidden_size=[256, 256],
     ):
         """

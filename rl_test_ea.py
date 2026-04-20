@@ -321,11 +321,11 @@ def run_evolution_last_layer_rl_warmstart(
 if __name__ == "__main__":
     run_evolution_last_layer_rl_warmstart(
         num_generations=300,
-        population_size=50,
+        population_size=130,
         ckpt_interval=5,
         checkpoint_path=None,
         random_seed=42,
-        sigma=0.001,
+        sigma=0.25,
         n_eval_episodes=1,
         max_episode_steps=1000,
     )

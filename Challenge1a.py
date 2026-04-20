@@ -118,7 +118,7 @@ def test_exercise_implementation():
     # Test 3: Evolutionary Algorithm
     print("\n[3/3] Testing Evolutionary Algorithm API...")
     try:
-        ea = EvoAlgAPI(n_params=100, population_size=20, sigma=0.5)
+        ea = EvoAlgAPI(n_params=100, population_size=20, sigma=0.25)
         population = ea.ask()
         assert population.shape == (20, 100), (
             f"Population shape should be (20, 100), got {population.shape}"
@@ -221,7 +221,7 @@ def run_evolution_neural_controller(
     # Create evolutionary algorithm with checkpointing
     num_params = world.n_params
     ea = EvoAlgAPI(
-        num_params, population_size=population_size, sigma=0.5, output_dir=ckpt_dir
+        num_params, population_size=population_size, sigma=0.2, output_dir=ckpt_dir
     )
 
     # Evolution loop (checkpointing happens automatically in ea.tell())
@@ -439,8 +439,8 @@ if __name__ == "__main__":
 
     # Uncomment to run full evolution:
     run_evolution_neural_controller(
-        num_generations=300,
-        population_size=280,
+        num_generations=2000,
+        population_size=130,
         ckpt_interval=5,
         checkpoint_path=None,
         run_evaluation=True,

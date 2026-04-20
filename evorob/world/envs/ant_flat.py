@@ -121,27 +121,29 @@ class AntFlatEnvironment(MujocoEnv):
         else:
             return False
     def _get_rew(self, x_velocity: float, y_velocity: float, action):
-        forward_reward = 5.0 * x_velocity
+        forward_reward = 4.0 * x_velocity
         healthy_reward = 1.0 if not self._get_termination() else 0.0
 
         ctrl_cost = 0.01 * np.sum(np.square(action))
-        drift_penalty = 0.02 * (y_velocity ** 2)
+        drift_penalty =  0.1 * abs(y_velocity)
 
-        quat = self.data.qpos[3:7].copy()   # [w, x, y, z]
-        orientation_penalty = 0.2 * (quat[1] ** 2 + quat[2] ** 2)
+        quat = self.data.qpos[3:7].copy()
+        orientation_penalty = 0.3 * (quat[1] ** 2 + quat[2] ** 2)
 
         reward = (
             forward_reward
             + healthy_reward
             - ctrl_cost
+             - drift_penalty
+                - orientation_penalty
+
     
-           
         )
 
         return reward, {
             "reward_forward": forward_reward,
             "reward_survive": healthy_reward,
-            "reward_ctrl": ctrl_cost,
-            "reward_drift": drift_penalty,
-            "reward_orientation": orientation_penalty,
+            "reward_ctrl": -ctrl_cost,
+            "reward_drift": -drift_penalty,
+            "reward_orientation": -orientation_penalty,
         }
