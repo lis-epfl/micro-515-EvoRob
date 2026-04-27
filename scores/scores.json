@@ -1,7 +1,7 @@
 {
   "challenges": [
     { "key": "challenge1", "label": "Challenge 1" },
-    { "key": "challenge2", "label": "Challenge 2" }
+    { "key": "challenge2", "label": "Challenge 2" },
     { "key": "challenge3", "label": "Challenge 3" }
   ],
   "teams": [
