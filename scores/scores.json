@@ -2,17 +2,18 @@
   "challenges": [
     { "key": "challenge1", "label": "Challenge 1" },
     { "key": "challenge2", "label": "Challenge 2" }
+    { "key": "challenge3", "label": "Challenge 3" }
   ],
   "teams": [
-    { "team": "A-GROUPA",            "challenge1": 0, "challenge2": 1643, "challenge3": 0 },
+    { "team": "A-GROUPA",            "challenge1": 0, "challenge2": 1643, "challenge3": 6148 },
     { "team": "B-groupB",            "challenge1": 1742, "challenge2": 215, "challenge3": 0 },
     { "team": "C-The Comeback Team", "challenge1": 260, "challenge2": 0, "challenge3": 0 },
-    { "team": "D-SPIDERMAN",         "challenge1": 0, "challenge2": 469, "challenge3": 0 },
+    { "team": "D-SPIDERMAN",         "challenge1": 0, "challenge2": 469, "challenge3": 1446 },
     { "team": "E-Gp-E",              "challenge1": 3517, "challenge2": 2605, "challenge3": 0 },
     { "team": "F-Group F",           "challenge1": 1182, "challenge2": 0, "challenge3": 0 },
     { "team": "G-GTEAM",             "challenge1": 457, "challenge2": 0, "challenge3": 0 },
-    { "team": "H-Exodia",            "challenge1": 4392, "challenge2": 2066, "challenge3": 0 },
+    { "team": "H-Exodia",            "challenge1": 4392, "challenge2": 2066, "challenge3": 1731 },
     { "team": "I-4LegsIsNotEnough",  "challenge1": 1049, "challenge2": 0, "challenge3": 0 },
-    { "team": "W-groupW",            "challenge1": 1560, "challenge2": 0, "challenge3": 0 }
+    { "team": "W-groupW",            "challenge1": 1560, "challenge2": 0, "challenge3": 853 }
   ]
 }
