@@ -4,6 +4,7 @@ import xml.etree.ElementTree as xml
 from os.path import join, basename, isfile
 from tempfile import TemporaryDirectory
 
+import mujoco
 import numpy as np
 
 os.environ.setdefault("MUJOCO_GL", "egl")
@@ -12,6 +13,59 @@ from evorob.utils.filesys import get_last_checkpoint_dir, get_project_root
 from evorob.world.base import World
 from evorob.world.robot.controllers.base import Controller
 from evorob.world.robot.morphology.ant_custom_robot import AntRobot
+
+# Throw schedule: (trigger_x, body_name, y_sign).
+# Each entry fires once when robot qpos[0] >= trigger_x during an episode.
+# Spheres are thrown from y = y_sign * 7 at height z=4.5, with horizontal
+# velocity aimed at bridge centre (y=0).  Order: small → medium → large.
+THROW_SCHEDULE = [
+    (70,  "sphere_s", +1),
+    (74,  "sphere_s", -1),
+    (78,  "sphere_s", +1),
+    (82,  "sphere_m", -1),
+    (86,  "sphere_m", +1),
+    (90,  "sphere_m", -1),
+    (93,  "sphere_l", +1),
+    (96,  "sphere_l", -1),
+    (99,  "sphere_l", +1),
+]
+
+_SPHERE_PARK = {
+    "sphere_s": (75,  0, -10),
+    "sphere_m": (90,  0, -10),
+    "sphere_l": (105, 0, -10),
+}
+_SPHERE_JOINTS = {
+    "sphere_s": "joint_sphere_s",
+    "sphere_m": "joint_sphere_m",
+    "sphere_l": "joint_sphere_l",
+}
+
+# Second worldbody appended AFTER the robot include so sphere joints follow
+# robot joints in qpos/qvel — preserving the original 27-dim observation space.
+_SPHERE_WORLDBODY_XML = """<worldbody>
+  <body name="sphere_s" pos="75 0 -10">
+    <freejoint name="joint_sphere_s"/>
+    <inertial pos="0 0 0" mass="1.0" diaginertia="0.025 0.025 0.025"/>
+    <geom name="geom_sphere_s" type="sphere" size="0.25"
+          rgba="1.0 0.95 0.2 1" friction="0.8 0.5 0.5"
+          condim="3" contype="1" conaffinity="1"/>
+  </body>
+  <body name="sphere_m" pos="90 0 -10">
+    <freejoint name="joint_sphere_m"/>
+    <inertial pos="0 0 0" mass="5.0" diaginertia="0.32 0.32 0.32"/>
+    <geom name="geom_sphere_m" type="sphere" size="0.40"
+          rgba="1.0 0.5 0.1 1" friction="0.8 0.5 0.5"
+          condim="3" contype="1" conaffinity="1"/>
+  </body>
+  <body name="sphere_l" pos="105 0 -10">
+    <freejoint name="joint_sphere_l"/>
+    <inertial pos="0 0 0" mass="15.0" diaginertia="2.16 2.16 2.16"/>
+    <geom name="geom_sphere_l" type="sphere" size="0.60"
+          rgba="0.85 0.1 0.1 1" friction="0.8 0.5 0.5"
+          condim="3" contype="1" conaffinity="1"/>
+  </body>
+</worldbody>"""
 
 ROOT_DIR = get_project_root()
 _EVAL_TERRAIN_XML = join(
@@ -109,7 +163,10 @@ class EvalWorld(World):
 
         world = xml.parse(_EVAL_TERRAIN_XML)
         robot_env = world.getroot()
+        # Robot include comes before sphere worldbody so robot joints appear
+        # first in qpos, keeping the original observation dimensionality.
         robot_env.append(xml.Element("include", attrib={"file": robot_filename}))
+        robot_env.append(xml.fromstring(_SPHERE_WORLDBODY_XML))
         world_xml = xml.tostring(robot_env, encoding="unicode")
         with open(self.world_file, "w") as f:
             f.write(world_xml)
@@ -184,6 +241,79 @@ class EvalWorld(World):
             render_mode=render_mode,
             **kwargs,
         )
+
+    # ------------------------------------------------------------------
+    # Ball-throwing utilities
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _joint_addrs(model, joint_name):
+        """Return (qpos_start, dof_start) for a named joint."""
+        jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+        return int(model.jnt_qposadr[jid]), int(model.jnt_dofadr[jid])
+
+    @staticmethod
+    def park_spheres(env):
+        """Reset all three throwable spheres to their underground parking spots."""
+        model = env.unwrapped.model
+        data  = env.unwrapped.data
+        for body_name, (px, py, pz) in _SPHERE_PARK.items():
+            jname = _SPHERE_JOINTS[body_name]
+            try:
+                qa, da = EvalWorld._joint_addrs(model, jname)
+            except Exception:
+                continue  # sphere not present in this model
+            data.qpos[qa:qa+3] = [px, py, pz]
+            data.qpos[qa+3:qa+7] = [1, 0, 0, 0]  # unit quaternion
+            data.qvel[da:da+6] = 0.0
+        mujoco.mj_forward(model, data)
+
+    @staticmethod
+    def throw_sphere(env, body_name, robot_x, y_sign):
+        """Teleport a sphere to throw position and give it lateral velocity.
+
+        Sphere is placed at (robot_x + 2, y_sign*7, 4.5) and thrown with
+        velocity (0, y_sign*-9, 0) so it arcs onto the bridge.
+        """
+        model = env.unwrapped.model
+        data  = env.unwrapped.data
+        jname = _SPHERE_JOINTS.get(body_name)
+        if jname is None:
+            return
+        try:
+            qa, da = EvalWorld._joint_addrs(model, jname)
+        except Exception:
+            return
+        throw_x = robot_x + 2.0
+        throw_y = y_sign * 7.0
+        throw_z = 4.5
+        data.qpos[qa:qa+3] = [throw_x, throw_y, throw_z]
+        data.qpos[qa+3:qa+7] = [1, 0, 0, 0]
+        data.qvel[da:da+3] = [0.0, y_sign * -9.0, 0.0]
+        data.qvel[da+3:da+6] = 0.0
+        mujoco.mj_forward(model, data)
+
+    @staticmethod
+    def run_throw_step(env, robot_x, pending_throws):
+        """Fire any pending throws whose trigger_x has been passed.
+
+        Args:
+            env: gymnasium env (must expose .unwrapped.model/.data)
+            robot_x: current robot x position
+            pending_throws: list of (trigger_x, body_name, y_sign) — mutated in place
+
+        Returns:
+            Updated pending_throws list.
+        """
+        fired = []
+        for entry in pending_throws:
+            trig_x, body_name, y_sign = entry
+            if robot_x >= trig_x:
+                EvalWorld.throw_sphere(env, body_name, robot_x, y_sign)
+                fired.append(entry)
+        for f in fired:
+            pending_throws.remove(f)
+        return pending_throws
 
     # ------------------------------------------------------------------
     # Required World abstract methods

@@ -1,5 +1,5 @@
 <mujoco model="Final World">
-  <!-- Three-section test terrain: flat -> ice -> hill -->
+  <!-- Three-section test terrain: flat -> ice -> hill -> platform -> bridge -> goal -->
   <compiler angle="degree" coordinate="local" inertiafromgeom="true" autolimits="true"/>
   <option integrator="RK4" timestep="0.01" gravity="0 0 -9.81"/>
 
@@ -28,7 +28,7 @@
 
     <texture type="2d" name="bridge_tex" builtin="checker" mark="edge"
              rgb1="0.4 0.3 0.2" rgb2="0.3 0.2 0.1" markrgb="0.6 0.5 0.4" width="200" height="200"/>
-    <material name="bridge_mat" texture="bridge_tex" texuniform="true" texrepeat="4 1" reflectance="0.2"/>
+    <material name="bridge_mat" texture="bridge_tex" texuniform="true" texrepeat="6 1" reflectance="0.2"/>
 
     <texture type="2d" name="goal_tex" builtin="flat" rgb1="1.0 0.85 0.0" width="100" height="100"/>
     <material name="goal_mat" texture="goal_tex" texuniform="true" reflectance="0.7" emission="0.6"/>
@@ -41,83 +41,99 @@
     <material name="finish_mat" texture="finish_tex" texuniform="true" texrepeat="6 2" reflectance="0.3" emission="0.2"/>
 
     <!-- terrain.png generated at runtime; x_half=50 covers 100 units (x ∈ [100,200] when pos=150) -->
-    <hfield name="terrain" file="hilly_hfield.png" size="10 5 15 1"/>
+    <hfield name="terrain" file="hilly_hfield.png" size="10 5 8 1"/>
   </asset>
 
   <worldbody>
-    <!-- Lights -->
-    <light pos="5 0 20" dir="0 0 -1" directional="false"/>
-    <light pos="25 0 20" dir="0 0 -1" directional="false"/>
-    <light pos="45 0 20" dir="0 0 -1" directional="false"/>
-    <light pos="80 0 20" dir="0 0 -1" directional="false"/>
+    <!-- Lights along path -->
+    <light pos="5 0 20"   dir="0 0 -1" directional="false"/>
+    <light pos="25 0 20"  dir="0 0 -1" directional="false"/>
+    <light pos="45 0 20"  dir="0 0 -1" directional="false"/>
+    <light pos="80 0 20"  dir="0 0 -1" directional="false"/>
+    <light pos="110 0 20" dir="0 0 -1" directional="false"/>
 
-    <!-- Warm gold overhead flood -->
-    <light name="goal_flood" pos="100 0 10" dir="0 0 -1"
+    <!-- Goal zone lights -->
+    <light name="goal_flood" pos="130 0 10" dir="0 0 -1"
            diffuse="1.0 0.92 0.65" specular="0.6 0.6 0.3"
            cutoff="40" exponent="8" directional="false"/>
-    <!-- Red dramatic side light from the left -->
-    <light name="goal_red" pos="100 -12 5" dir="0 1 -0.4"
+    <light name="goal_red" pos="130 -12 5" dir="0 1 -0.4"
            diffuse="1.0 0.15 0.15" specular="0.4 0.0 0.0"
            cutoff="30" exponent="10" directional="false"/>
-    <!-- Blue dramatic side light from the right -->
-    <light name="goal_blue" pos="100 12 5" dir="0 -1 -0.4"
+    <light name="goal_blue" pos="130 12 5" dir="0 -1 -0.4"
            diffuse="0.2 0.35 1.0" specular="0.0 0.1 0.5"
            cutoff="30" exponent="10" directional="false"/>
 
-    <!-- Flat section: x=[-5, 15] (60 units); robot starts at x=0 with buffer -->
+    <!-- Flat section: x=[-5, 15]; robot starts at x=0 -->
     <geom name="floor" type="box" pos="5 0 -0.5" size="10 5 0.5"
           material="flat_mat" friction="1 0.5 0.5" condim="3" conaffinity="1" contype="1"/>
 
-    <!-- Ice section: x=[15, 35] (50 units) -->
+    <!-- Ice section: x=[15, 35] -->
     <geom name="ice_floor" type="box" pos="25 0 -0.5" size="10 5 0.5"
-          material="ice_mat" friction="0.2 0.05 0.05" condim="3" conaffinity="1" contype="1" 
+          material="ice_mat" friction="0.2 0.05 0.05" condim="3" conaffinity="1" contype="1"
           rgba="0.7 0.85 1.0 1"/>
 
-    <!-- Hill section: x=[35, 55]; terrain.png left edge seamless from ice section -->
+    <!-- Hill section: x=[35, 55]; gentle slope via hilly_hfield.png -->
     <geom name="hill" type="hfield" hfield="terrain" material="hill_mat"
           pos="45 0 0" condim="3" friction="1 0.5 0.5" conaffinity="1" contype="1"/>
 
-    <!-- Platform: wide flat area at hill-top height after the climb; x=[55, 65] -->
-    <geom name="platform" type="box" pos="60 0 1.0" size="5 5 0.3"
+    <!-- Platform: flat area at hill-top height; x=[55, 65]; top z=0.690 matches hill peak -->
+    <geom name="platform" type="box" pos="60 0 0.390" size="5 5 0.3"
           material="platform_mat" friction="1 0.5 0.5" condim="3" conaffinity="1" contype="1"/>
 
-    <!-- Bridge: narrow section crossing to the goal; x=[65, 95] y=[-1.5, 1.5] -->
-    <geom name="bridge" type="box" pos="80 0 1.0" size="15 1.5 0.15"
+    <!-- Bridge: 35 units: x=[65, 100] y=[-1.5, 1.5]; top z=0.690 -->
+    <geom name="bridge" type="box" pos="82.5 0 0.540" size="17.5 1.5 0.15"
           material="bridge_mat" friction="1 0.5 0.5" condim="3" conaffinity="1" contype="1"/>
 
-    <!-- ── Goal: celebratory finish corridor x=[95, 105] ── -->
-    <!-- Gold floor -->
-    <geom name="goal_floor" type="box" pos="100 0 0.85" size="5 3 0.3"
+    <!-- Goal: x=[100, 110]; top z=0.690 -->
+    <geom name="goal_floor" type="box" pos="105 0 0.390" size="5 3 0.3"
           material="goal_mat" friction="1 0.5 0.5" condim="3" conaffinity="1" contype="1"/>
 
-    <!-- Front arch at x=95 (entrance) -->
-    <geom name="arch1_post_l" type="box" pos="95 -3 2.5" size="0.3 0.3 2"
+    <!-- Front arch at x=100 (bridge exit / goal entrance) -->
+    <geom name="arch1_post_l" type="box" pos="100 -3 2.69" size="0.3 0.3 2"
           material="arch_mat" condim="3" conaffinity="1" contype="1"/>
-    <geom name="arch1_post_r" type="box" pos="95  3 2.5" size="0.3 0.3 2"
+    <geom name="arch1_post_r" type="box" pos="100  3 2.69" size="0.3 0.3 2"
           material="arch_mat" condim="3" conaffinity="1" contype="1"/>
-    <geom name="arch1_banner" type="box" pos="95 0 5" size="0.1 2.5 0.4"
+    <geom name="arch1_banner" type="box" pos="100 0 5" size="0.1 2.5 0.4"
           material="finish_mat" conaffinity="0" contype="0"/>
-    <geom name="arch1_ball_l" type="sphere" pos="95 -3 5" size="0.4"
+    <geom name="arch1_ball_l" type="sphere" pos="100 -3 5" size="0.4"
           material="goal_mat" conaffinity="0" contype="0"/>
-    <geom name="arch1_ball_r" type="sphere" pos="95  3 5" size="0.4"
+    <geom name="arch1_ball_r" type="sphere" pos="100  3 5" size="0.4"
           material="goal_mat" conaffinity="0" contype="0"/>
 
-    <!-- Back arch at x=105 (exit) — mirrors front -->
-    <geom name="arch2_post_l" type="box" pos="105 -3 2.5" size="0.3 0.3 2.0"
+    <!-- Back arch at x=110 (goal exit) -->
+    <geom name="arch2_post_l" type="box" pos="110 -3 2.69" size="0.3 0.3 2.0"
           material="arch_mat" condim="3" conaffinity="1" contype="1"/>
-    <geom name="arch2_post_r" type="box" pos="105  3 2.5" size="0.3 0.3 2.0"
+    <geom name="arch2_post_r" type="box" pos="110  3 2.69" size="0.3 0.3 2.0"
           material="arch_mat" condim="3" conaffinity="1" contype="1"/>
-    <geom name="arch2_banner" type="box" pos="105 0 5" size="0.1 2.5 0.4"
+    <geom name="arch2_banner" type="box" pos="110 0 5" size="0.1 2.5 0.4"
           material="finish_mat" conaffinity="0" contype="0"/>
-    <geom name="arch2_ball_l" type="sphere" pos="105 -3 5" size="0.4"
+    <geom name="arch2_ball_l" type="sphere" pos="110 -3 5" size="0.4"
           material="goal_mat" conaffinity="0" contype="0"/>
-    <geom name="arch2_ball_r" type="sphere" pos="105  3 5" size="0.4"
+    <geom name="arch2_ball_r" type="sphere" pos="110  3 5" size="0.4"
           material="goal_mat" conaffinity="0" contype="0"/>
 
-    <!-- Side rails connecting both arches at the top -->
-    <geom name="rail_l" type="box" pos="100 -3 4.2" size="5 0.15 0.15"
+    <!-- Side rails connecting arches -->
+    <geom name="rail_l" type="box" pos="105 -3 4.2" size="5 0.15 0.15"
           material="arch_mat" conaffinity="0" contype="0"/>
-    <geom name="rail_r" type="box" pos="100  3 4.2" size="5 0.15 0.15"
+    <geom name="rail_r" type="box" pos="105  3 4.2" size="5 0.15 0.15"
           material="arch_mat" conaffinity="0" contype="0"/>
+
+    <!-- ── Named cameras for video recording ── -->
+
+    <!-- Bridge-scenario cameras (focused on x=[65,100] bridge zone) -->
+    <!-- Side view: from +y, looking across the bridge -->
+    <camera name="cam_side" pos="82 28 9" zaxis="0 0.954 0.301" fovy="55"/>
+    <!-- Top / bird's-eye view over bridge -->
+    <camera name="cam_top" pos="82 0 50" zaxis="0 0 -1" fovy="65"/>
+    <!-- POV: behind bridge entrance, looking along +x -->
+    <camera name="cam_pov" pos="58 0 4" zaxis="0.999 0 -0.040" fovy="60"/>
+
+    <!-- Origin-scenario cameras (wide view of full course x=[0,110]) -->
+    <!-- Wide side view: from +y, covering entire terrain -->
+    <camera name="cam_wide_side" pos="55 55 22" zaxis="0 0.930 0.366" fovy="65"/>
+    <!-- Wide top / bird's-eye view of full course -->
+    <camera name="cam_wide_top" pos="55 0 90" zaxis="0 0 -1" fovy="90"/>
+    <!-- Wide POV: from far behind start, looking along +x -->
+    <camera name="cam_wide_pov" pos="-8 0 5" zaxis="0.997 0 -0.077" fovy="65"/>
   </worldbody>
 </mujoco>

@@ -1,12 +1,15 @@
 from os import path
 from typing import Dict
 
+import mujoco
 import numpy as np
 from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box
 
 DEFAULT_CAMERA_CONFIG = {"distance": 5.0}
+# Names of throwable sphere joints injected by EvalWorld.update_robot_xml
+_SPHERE_JOINT_NAMES = ("joint_sphere_s", "joint_sphere_m", "joint_sphere_l")
 
 
 class EvalEnv(MujocoEnv, utils.EzPickle):
@@ -66,11 +69,27 @@ class EvalEnv(MujocoEnv, utils.EzPickle):
             "render_fps": int(np.round(1.0 / self.dt)),
         }
 
-        # Observation: qpos (skip root xy) + qvel — dimensions inferred from model
-        obs_size = (self.data.qpos.size - 2) + self.data.qvel.size
+        # Find where robot qpos/qvel ends (sphere joints start after robot joints).
+        # Falls back to full nq/nv when no sphere joints are present.
+        self._robot_nq, self._robot_nv = self._find_robot_dof_counts()
+
+        obs_size = (self._robot_nq - 2) + self._robot_nv
         self.observation_space = Box(
             low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float64
         )
+
+
+    def _find_robot_dof_counts(self):
+        """Return (robot_nq, robot_nv): qpos/qvel entries that belong to the robot.
+
+        Sphere freejoints are injected after the robot include, so the first
+        sphere joint's qposadr/dofadr marks the boundary.
+        """
+        for jname in _SPHERE_JOINT_NAMES:
+            jid = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, jname)
+            if jid >= 0:
+                return int(self.model.jnt_qposadr[jid]), int(self.model.jnt_dofadr[jid])
+        return self.model.nq, self.model.nv
 
     def step(self, action):
         x_before = self.data.qpos[0]
@@ -100,11 +119,22 @@ class EvalEnv(MujocoEnv, utils.EzPickle):
 
     def _is_terminated(self) -> bool:
         qacc = self.data.qacc
-        return bool(np.any(np.isnan(qacc) | np.isinf(qacc) | (np.abs(qacc) > 1e6)))
+        if bool(np.any(np.isnan(qacc) | np.isinf(qacc) | (np.abs(qacc) > 1e6))):
+            return True
+
+        # Lying on back: local z-axis tilted > 120° from upright (cos 120° = -0.5)
+        q = self.data.qpos[3:7]  # [w, x, y, z]
+        if float(q[0]**2 - q[1]**2 - q[2]**2 + q[3]**2) < -0.5:
+            return True
+
+        return False
 
     def _get_obs(self):
-        # Skip root xy (first 2 qpos elements) to keep observations translation-invariant
-        return np.concatenate((self.data.qpos.flat[2:], self.data.qvel.flat.copy()))
+        # Skip robot root xy; exclude sphere joint state (comes after _robot_nq/_robot_nv)
+        return np.concatenate((
+            self.data.qpos.flat[2:self._robot_nq],
+            self.data.qvel.flat[:self._robot_nv],
+        ))
 
     def reset_model(self):
         noise = self._reset_noise_scale
